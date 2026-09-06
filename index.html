@@ -1,0 +1,921 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Global Flight Hunter — AI destekli global uçuş fırsatı keşif ve rota optimizasyon uygulaması.">
+<style>
+  :root { color-scheme: light dark; }
+  body { margin: 0; font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  img { max-width: 100%; }
+  [hidden] { display: none !important; }
+</style>
+<title>Global Flight Hunter</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+
+<style>
+  /* ==========================================================================
+     Global Flight Hunter — landing page
+
+     Palette, type scale and spacing are taken from the project's own design
+     system (docs/DESIGN_SYSTEM.md), not invented here: the ink/aurora/jade
+     token set, Inter Tight for display, Inter for body. IBM Plex Mono carries
+     the aviation-data role — IATA codes, flight numbers, times — because that
+     material reads as instrument output, not prose.
+
+     Dark-first by design decision, with a complete light palette so the page
+     holds on either host ground.
+     ========================================================================== */
+
+  :root {
+    /* --- light palette (complete, defined first) */
+    --bg-canvas:        #F2F5F9;
+    --bg-surface:       #FFFFFF;
+    --bg-raised:        #FFFFFF;
+    --bg-sunken:        #E2E7EE;
+    --bg-board:         #0B0E13;   /* the board stays dark in both themes */
+
+    --border-subtle:    #E2E7EE;
+    --border-default:   #C6CDD8;
+    --border-strong:    #A6B0BF;
+
+    --text-primary:     #0B0E13;
+    --text-secondary:   #2A3342;
+    --text-tertiary:    #55637A;
+    --text-on-board:    #F2F5F9;
+    --text-on-board-dim:#7A8798;
+
+    --brand:            #1E6BFF;
+    --brand-soft:       rgba(30,107,255,0.10);
+    --brand-line:       rgba(30,107,255,0.28);
+
+    --deal:             #059669;
+    --deal-soft:        rgba(5,150,105,0.10);
+    --warn:             #D97706;
+    --anomaly:          #7C3AED;
+
+    --shadow-card:      0 1px 2px rgba(11,14,19,.05), 0 8px 24px rgba(11,14,19,.06);
+    --shadow-board:     0 24px 64px rgba(7,9,12,.28);
+
+    --rail: 1px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg-canvas:        #07090C;
+      --bg-surface:       #0B0E13;
+      --bg-raised:        #10141B;
+      --bg-sunken:        #0B0E13;
+      --bg-board:         #10141B;
+
+      --border-subtle:    #151A23;
+      --border-default:   #1D2430;
+      --border-strong:    #2A3342;
+
+      --text-primary:     #F2F5F9;
+      --text-secondary:   #A6B0BF;
+      --text-tertiary:    #55637A;
+      --text-on-board:    #F2F5F9;
+      --text-on-board-dim:#7A8798;
+
+      --brand:            #3B82F6;
+      --brand-soft:       rgba(59,130,246,0.14);
+      --brand-line:       rgba(59,130,246,0.30);
+
+      --deal:             #34D399;
+      --deal-soft:        rgba(52,211,153,0.12);
+      --warn:             #FBBF24;
+      --anomaly:          #A78BFA;
+
+      --shadow-card:      none;
+      --shadow-board:     0 24px 64px rgba(0,0,0,.5);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --bg-canvas:        #07090C;
+    --bg-surface:       #0B0E13;
+    --bg-raised:        #10141B;
+    --bg-sunken:        #0B0E13;
+    --bg-board:         #10141B;
+
+    --border-subtle:    #151A23;
+    --border-default:   #1D2430;
+    --border-strong:    #2A3342;
+
+    --text-primary:     #F2F5F9;
+    --text-secondary:   #A6B0BF;
+    --text-tertiary:    #55637A;
+    --text-on-board:    #F2F5F9;
+    --text-on-board-dim:#7A8798;
+
+    --brand:            #3B82F6;
+    --brand-soft:       rgba(59,130,246,0.14);
+    --brand-line:       rgba(59,130,246,0.30);
+
+    --deal:             #34D399;
+    --deal-soft:        rgba(52,211,153,0.12);
+    --warn:             #FBBF24;
+    --anomaly:          #A78BFA;
+
+    --shadow-card:      none;
+    --shadow-board:     0 24px 64px rgba(0,0,0,.5);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg-canvas);
+    color: var(--text-primary);
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* A single left rail runs the length of the page and ties the sections
+     together — the structural device instead of a stack of floating cards. */
+  .rail {
+    border-left: var(--rail) solid var(--border-subtle);
+    padding-left: 28px;
+  }
+
+  h1, h2, h3 {
+    font-family: 'Inter Tight', 'Inter', system-ui, sans-serif;
+    text-wrap: balance;
+    margin: 0;
+  }
+
+  .eyebrow {
+    font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+  }
+
+  .mono { font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace; }
+  .num  { font-variant-numeric: tabular-nums; }
+
+  a { color: var(--brand); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  a:focus-visible,
+  .cta:focus-visible {
+    outline: 2px solid var(--brand);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  /* ---------------------------------------------------------------- header */
+  header {
+    border-bottom: 1px solid var(--border-subtle);
+    background: var(--bg-canvas);
+  }
+  .head-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    padding: 18px 0;
+  }
+  .wordmark {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+  .wordmark .mark {
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 700;
+    font-size: 17px;
+    letter-spacing: -.02em;
+  }
+  .wordmark .tld {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--text-tertiary);
+    letter-spacing: .1em;
+  }
+
+  .status {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    border: 1px solid var(--border-default);
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    background: var(--bg-surface);
+  }
+  .dot {
+    width: 6px; height: 6px;
+    border-radius: 999px;
+    background: var(--warn);
+    flex: none;
+  }
+
+  /* ---------------------------------------------------------------- hero */
+  .hero { padding: 72px 0 8px; }
+
+  .hero-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 44px;
+  }
+  @media (min-width: 940px) {
+    .hero-grid { grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr); gap: 56px; align-items: start; }
+  }
+
+  h1 {
+    font-size: clamp(38px, 6.2vw, 60px);
+    line-height: 1.02;
+    font-weight: 700;
+    letter-spacing: -.035em;
+    margin-bottom: 20px;
+  }
+  h1 .accent { color: var(--brand); }
+
+  .lede {
+    font-size: 17px;
+    color: var(--text-secondary);
+    max-width: 60ch;
+    margin: 0 0 18px;
+  }
+  .lede strong { color: var(--text-primary); font-weight: 600; }
+
+  .dev-note {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 14px 16px;
+    border: 1px solid var(--border-default);
+    border-left: 3px solid var(--warn);
+    border-radius: 0 10px 10px 0;
+    background: var(--bg-surface);
+    font-size: 14px;
+    color: var(--text-secondary);
+    max-width: 60ch;
+    margin-top: 24px;
+  }
+  .dev-note b { color: var(--text-primary); }
+
+  /* ---------------------------------------------------------------- board */
+  /* The thesis of the product, shown rather than described: one classic route,
+     one decomposed route, and the gap between them. */
+  .board {
+    background: var(--bg-board);
+    border: 1px solid var(--border-strong);
+    border-radius: 14px;
+    padding: 22px;
+    box-shadow: var(--shadow-board);
+    color: var(--text-on-board);
+    overflow-x: auto;
+  }
+
+  .board-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid rgba(166,176,191,.16);
+  }
+  .board-head .eyebrow { color: var(--text-on-board-dim); }
+
+  .board-example {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10.5px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--warn);
+    border: 1px solid rgba(251,191,36,.35);
+    border-radius: 999px;
+    padding: 3px 8px;
+    white-space: nowrap;
+  }
+
+  .classic {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 16px;
+    padding: 16px 0 14px;
+    border-bottom: 1px dashed rgba(166,176,191,.22);
+  }
+  .classic-route {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text-on-board-dim);
+  }
+  .classic-price {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-on-board-dim);
+    text-decoration: line-through;
+    text-decoration-thickness: 1.5px;
+  }
+
+  .segments {
+    list-style: none;
+    margin: 16px 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .seg {
+    display: grid;
+    grid-template-columns: 76px minmax(0,1fr) auto;
+    align-items: center;
+    gap: 14px;
+    padding: 11px 10px;
+    border-radius: 8px;
+    background: rgba(59,130,246,.05);
+    animation: seg-in .42s cubic-bezier(0,0,0,1) both;
+  }
+  .seg:nth-child(1) { animation-delay: .05s; }
+  .seg:nth-child(2) { animation-delay: .16s; }
+  .seg:nth-child(3) { animation-delay: .27s; }
+
+  @keyframes seg-in {
+    from { opacity: .55; transform: translateY(6px); }
+    to   { opacity: 1;   transform: translateY(0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .seg { animation: none; }
+  }
+
+  .seg-pair {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: .02em;
+    color: var(--text-on-board);
+  }
+  .seg-meta {
+    font-size: 12.5px;
+    color: var(--text-on-board-dim);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .seg-price {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-on-board);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .board-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 16px;
+    margin-top: 16px;
+    padding-top: 15px;
+    border-top: 1px solid rgba(166,176,191,.16);
+  }
+  .board-total .label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--text-on-board-dim);
+  }
+  .board-total .value {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -.02em;
+    font-variant-numeric: tabular-nums;
+  }
+  .saving .value { color: var(--deal); }
+
+  .board-flags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 16px;
+  }
+  .flag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: .04em;
+    padding: 4px 9px;
+    border-radius: 6px;
+    border: 1px solid rgba(166,176,191,.24);
+    color: var(--text-on-board-dim);
+  }
+  .flag.warn { color: var(--warn); border-color: rgba(251,191,36,.35); }
+  .flag.deal { color: var(--deal); border-color: rgba(52,211,153,.35); }
+
+  /* ---------------------------------------------------------------- sections */
+  section { padding: 64px 0; }
+  .section-head { margin-bottom: 32px; }
+  .section-head h2 {
+    font-size: clamp(24px, 3.2vw, 30px);
+    font-weight: 600;
+    letter-spacing: -.025em;
+    margin-top: 10px;
+  }
+  .section-head p {
+    color: var(--text-secondary);
+    max-width: 62ch;
+    margin: 12px 0 0;
+    font-size: 15.5px;
+  }
+
+  /* Capability list — an operations panel, not marketing cards. */
+  .caps {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+    border-top: 1px solid var(--border-subtle);
+  }
+  @media (min-width: 760px) {
+    .caps { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 40px; }
+  }
+  .cap {
+    display: grid;
+    grid-template-columns: 34px minmax(0, 1fr);
+    gap: 16px;
+    padding: 22px 0;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+  .cap-key {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .06em;
+    color: var(--brand);
+    padding-top: 3px;
+  }
+  .cap h3 {
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -.01em;
+    margin-bottom: 5px;
+  }
+  .cap p {
+    margin: 0;
+    font-size: 14.5px;
+    color: var(--text-secondary);
+  }
+
+  /* Pipeline — genuinely ordered, so the numbering carries information. */
+  .pipeline {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+    counter-reset: step;
+  }
+  @media (min-width: 860px) {
+    .pipeline { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+  }
+  .step {
+    position: relative;
+    padding: 20px 18px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: 10px;
+    box-shadow: var(--shadow-card);
+  }
+  .step::before {
+    counter-increment: step;
+    content: counter(step, decimal-leading-zero);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-tertiary);
+    display: block;
+    margin-bottom: 10px;
+  }
+  .step h3 { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+  .step p { margin: 0; font-size: 13.5px; color: var(--text-secondary); }
+  .step .cost {
+    display: inline-block;
+    margin-top: 12px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10.5px;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--deal);
+    background: var(--deal-soft);
+    border-radius: 5px;
+    padding: 3px 7px;
+  }
+  .step .cost.high { color: var(--warn); background: rgba(217,119,6,.10); }
+
+  /* Status / honesty block */
+  .status-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 28px;
+  }
+  @media (min-width: 760px) {
+    .status-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 44px; }
+  }
+  .status-col h3 {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: .02em;
+    margin-bottom: 14px;
+    color: var(--text-primary);
+  }
+  .status-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+  .status-list li {
+    display: grid;
+    grid-template-columns: 18px minmax(0, 1fr);
+    gap: 10px;
+    font-size: 14.5px;
+    color: var(--text-secondary);
+    align-items: start;
+  }
+  .status-list .tick { color: var(--deal); font-weight: 600; line-height: 1.5; }
+  .status-list .todo { color: var(--text-tertiary); line-height: 1.5; }
+
+  /* English block */
+  .english {
+    border: 1px solid var(--border-subtle);
+    border-radius: 12px;
+    background: var(--bg-surface);
+    padding: 26px 28px;
+    max-width: 74ch;
+    box-shadow: var(--shadow-card);
+  }
+  .english h2 { font-size: 17px; font-weight: 600; margin-bottom: 10px; }
+  .english p { margin: 0 0 10px; font-size: 14.5px; color: var(--text-secondary); }
+  .english p:last-child { margin-bottom: 0; }
+
+  /* ---------------------------------------------------------------- footer */
+  footer {
+    border-top: 1px solid var(--border-subtle);
+    padding: 40px 0 56px;
+    margin-top: 24px;
+  }
+  .foot-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 28px;
+  }
+  @media (min-width: 760px) {
+    .foot-grid { grid-template-columns: 1.2fr 1fr 1fr; gap: 40px; }
+  }
+  .foot-col h4 {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    margin: 0 0 12px;
+  }
+  .foot-col p, .foot-col li {
+    font-size: 13.5px;
+    color: var(--text-secondary);
+    margin: 0 0 8px;
+  }
+  .foot-col ul { list-style: none; margin: 0; padding: 0; }
+  .colophon {
+    margin-top: 32px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-subtle);
+    font-size: 12.5px;
+    color: var(--text-tertiary);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 18px;
+    justify-content: space-between;
+  }
+</style>
+</head>
+<body>
+
+
+<header>
+  <div class="wrap head-inner">
+    <div class="wordmark">
+      <span class="mark">GLOBAL FLIGHT HUNTER</span>
+      <span class="tld mono">GFH</span>
+    </div>
+    <span class="status"><span class="dot"></span>Geliştirme aşamasında · v0.1</span>
+  </div>
+</header>
+
+<main>
+  <!-- ================================================================ hero -->
+  <div class="wrap hero">
+    <div class="hero-grid">
+      <div>
+        <p class="eyebrow">Uçuş arbitrajı · keşif · fiyat zekâsı</p>
+        <h1>Ucuz uçuşu aramayı bırak.<br><span class="accent">Ucuz yolu</span> bulalım.</h1>
+
+        <p class="lede">
+          <strong>AI destekli global uçuş fırsatı keşif ve rota optimizasyon uygulaması.</strong>
+          Nereye gitmek istediğini bilmene gerek yok — bütçeni ve zamanını söyle,
+          dünyayı biz tarayalım.
+        </p>
+
+        <p class="lede">
+          Klasik arama motorları hazır güzergâhları karşılaştırır. Global Flight Hunter
+          bunun bir adım ötesine geçer: alternatif kalkış havalimanları, esnek tarihler
+          ve ayrı biletlerden kurulu kombinasyonlar üreterek klasik aramanın hiç
+          göstermediği yolları çıkarır — ve her fiyatı kendi geçmişiyle karşılaştırarak
+          gerçekten ucuz olup olmadığını söyler.
+        </p>
+
+        <div class="dev-note">
+          <span aria-hidden="true">◆</span>
+          <span>
+            <b>Uygulama şu anda geliştirme aşamasındadır.</b> Henüz yayında değil ve
+            bilet satışı yapmıyoruz. Bu sayfa projenin kamuya açık tanıtım sayfasıdır;
+            veri sağlayıcı entegrasyonu ve doğrulama çalışmaları sürüyor.
+          </span>
+        </div>
+      </div>
+
+      <!-- The product's thesis, shown as a departure-board style breakdown. -->
+      <div class="board" role="figure" aria-label="Örnek rota ayrıştırma senaryosu">
+        <div class="board-head">
+          <span class="eyebrow">Rota ayrıştırma</span>
+          <span class="board-example">Örnek senaryo — gerçek fiyat değil</span>
+        </div>
+
+        <div class="classic">
+          <span class="classic-route">IST → BKK · direkt arama</span>
+          <span class="classic-price num">₺17.850</span>
+        </div>
+
+        <ul class="segments">
+          <li class="seg">
+            <span class="seg-pair">ADB → SAW</span>
+            <span class="seg-meta">Positioning uçuşu · 1s 15dk</span>
+            <span class="seg-price">₺1.100</span>
+          </li>
+          <li class="seg">
+            <span class="seg-pair">SAW → AUH</span>
+            <span class="seg-meta">Ayrı bilet · 4s 30dk</span>
+            <span class="seg-price">₺2.450</span>
+          </li>
+          <li class="seg">
+            <span class="seg-pair">AUH → BKK</span>
+            <span class="seg-meta">Ayrı bilet · 6s 20dk</span>
+            <span class="seg-price">₺5.250</span>
+          </li>
+        </ul>
+
+        <div class="board-total">
+          <span class="label">Toplam</span>
+          <span class="value num">₺8.800</span>
+        </div>
+        <div class="board-total saving">
+          <span class="label">Tasarruf</span>
+          <span class="value num">₺9.050</span>
+        </div>
+
+        <div class="board-flags">
+          <span class="flag deal">Fırsat puanı 96/100</span>
+          <span class="flag warn">Risk: Orta</span>
+          <span class="flag">Self-transfer: Evet</span>
+          <span class="flag">3 ayrı bilet</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================ features -->
+  <section>
+    <div class="wrap rail">
+      <div class="section-head">
+        <p class="eyebrow">Ne yapıyor</p>
+        <h2>Dört temel yetenek</h2>
+        <p>
+          Hepsi tek bir soruya hizmet ediyor: bu parayı vermeye değer mi, ve daha
+          iyi bir yolu var mı?
+        </p>
+      </div>
+
+      <div class="caps">
+        <div class="cap">
+          <span class="cap-key">01</span>
+          <div>
+            <h3>Ucuz uçuş keşfi</h3>
+            <p>
+              Destinasyon girmeden arama. Bütçe, zaman penceresi ve seyahat süresini
+              ver; dünyadaki uygun noktalar harita üzerinde fiyat baloncuğu olarak çıksın.
+            </p>
+          </div>
+        </div>
+
+        <div class="cap">
+          <span class="cap-key">02</span>
+          <div>
+            <h3>Esnek tarih taraması</h3>
+            <p>
+              Tek bir güne kilitlenme. ±1, 3, 7, 14 veya 30 gün penceresinde en ucuz
+              kalkış–dönüş kombinasyonlarını ay ızgarası üzerinde gör.
+            </p>
+          </div>
+        </div>
+
+        <div class="cap">
+          <span class="cap-key">03</span>
+          <div>
+            <h3>Alternatif havalimanı</h3>
+            <p>
+              İzmir'den uçmak zorunda değilsin. Yakın havalimanları ve gerekirse bir
+              positioning uçuşu hesaba katılır — ulaşım maliyeti tasarrufu yiyorsa
+              öneri gösterilmez.
+            </p>
+          </div>
+        </div>
+
+        <div class="cap">
+          <span class="cap-key">04</span>
+          <div>
+            <h3>Fırsat alarmları</h3>
+            <p>
+              Rota, şehir, ülke ya da &ldquo;herhangi bir yer&rdquo; için alarm kur.
+              Fiyat hedefinin altına düştüğünde ya da geçmişine göre olağandışı
+              ucuzladığında bildirim gelsin.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ pipeline -->
+  <section>
+    <div class="wrap rail">
+      <div class="section-head">
+        <p class="eyebrow">Nasıl çalışıyor</p>
+        <h2>Pahalı sorgu en sona bırakılır</h2>
+        <p>
+          Dünyadaki her rota için kör API çağrısı yapmak hem yavaş hem sürdürülemez.
+          Sıra burada bilgi taşır: her adım bir sonrakinin maliyetini düşürür.
+        </p>
+      </div>
+
+      <div class="pipeline">
+        <div class="step">
+          <h3>Aday üretimi</h3>
+          <p>Rota grafiği, coğrafya ve mevsim kısıtlarıyla makul destinasyonlar seçilir.</p>
+          <span class="cost">Ağ kullanılmaz</span>
+        </div>
+        <div class="step">
+          <h3>İstatistik filtresi</h3>
+          <p>Rotanın kendi fiyat geçmişi bütçeye uymayan adayları daha sorulmadan eler.</p>
+          <span class="cost">Ağ kullanılmaz</span>
+        </div>
+        <div class="step">
+          <h3>Fiyat taraması</h3>
+          <p>Kalan adaylar için gözlemlenmiş fiyatlar çekilir ve fırsat puanı hesaplanır.</p>
+          <span class="cost">Önbellekli</span>
+        </div>
+        <div class="step">
+          <h3>Canlı doğrulama</h3>
+          <p>Yalnızca en iyi birkaç aday için, yalnızca sen istediğinde canlı sorgu yapılır.</p>
+          <span class="cost high">Seçici</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================== status -->
+  <section>
+    <div class="wrap rail">
+      <div class="section-head">
+        <p class="eyebrow">Şeffaflık</p>
+        <h2>Bugün nerede</h2>
+        <p>
+          Ürün henüz yayında değil. Neyin hazır olduğunu ve neyin olmadığını açıkça
+          yazıyoruz — çünkü fiyat gösteren bir ürünün ilk borcu dürüstlüktür.
+        </p>
+      </div>
+
+      <div class="status-grid">
+        <div class="status-col">
+          <h3>Tamamlanan</h3>
+          <ul class="status-list">
+            <li><span class="tick" aria-hidden="true">✓</span><span>Ürün mimarisi ve teknik tasarım dokümantasyonu</span></li>
+            <li><span class="tick" aria-hidden="true">✓</span><span>Fırsat puanı, rota riski ve gerçek maliyet motorları</span></li>
+            <li><span class="tick" aria-hidden="true">✓</span><span>Çoklu veri sağlayıcı soyutlama katmanı</span></li>
+            <li><span class="tick" aria-hidden="true">✓</span><span>Mobil uygulama iskeleti ve tasarım sistemi</span></li>
+          </ul>
+        </div>
+        <div class="status-col">
+          <h3>Devam eden</h3>
+          <ul class="status-list">
+            <li><span class="todo" aria-hidden="true">○</span><span>Uçuş veri sağlayıcı entegrasyonu ve kapsam doğrulaması</span></li>
+            <li><span class="todo" aria-hidden="true">○</span><span>Fiyat geçmişi biriktirme ve mevsimsellik analizi</span></li>
+            <li><span class="todo" aria-hidden="true">○</span><span>Harita tabanlı keşif arayüzü</span></li>
+            <li><span class="todo" aria-hidden="true">○</span><span>iOS ve Android beta sürümü</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="dev-note" style="margin-top:36px; max-width:74ch;">
+        <span aria-hidden="true">◆</span>
+        <span>
+          <b>Fiyatlar hakkında.</b> Uygulama yayına girdiğinde gösterilen fiyatların
+          çoğu <em>gözlemlenmiş</em> fiyatlar olacak — canlı ve rezerve edilebilir
+          fiyatlar değil. Her fiyatın yanında ne zaman gözlendiği yazacak. Bu bir
+          eksiklik değil, bilinçli bir tasarım kararı: kullanıcı ne gördüğünü bilmeli.
+        </span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================= english -->
+  <section>
+    <div class="wrap rail">
+      <div class="english">
+        <p class="eyebrow">In English</p>
+        <h2>About Global Flight Hunter</h2>
+        <p>
+          Global Flight Hunter is an AI-assisted global flight deal discovery and
+          route optimisation application, currently <strong>in active development</strong>.
+        </p>
+        <p>
+          Instead of requiring a fixed origin, destination and date, it starts from a
+          budget and a time window and searches for viable destinations worldwide. It
+          builds alternative itineraries — nearby departure airports, flexible dates,
+          split tickets and self-transfer combinations — that conventional search does
+          not surface, and scores every fare against that route's own price history so
+          travellers can tell a genuine deal from an ordinary one.
+        </p>
+        <p>
+          The product is not yet released and does not sell tickets. This page is the
+          project's public information page.
+        </p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- ================================================================= footer -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-col">
+        <h4>Global Flight Hunter</h4>
+        <p>
+          AI destekli global uçuş fırsatı keşif ve rota optimizasyon uygulaması.
+          Geliştirme aşamasında, bağımsız bir proje.
+        </p>
+      </div>
+
+      <div class="foot-col">
+        <h4>Gizlilik</h4>
+        <ul>
+          <li>Bu sayfa statiktir.</li>
+          <li>Çerez kullanılmaz.</li>
+          <li>Analitik veya izleme betiği çalıştırılmaz.</li>
+          <li>Hiçbir kişisel veri toplanmaz veya saklanmaz.</li>
+        </ul>
+      </div>
+
+      <div class="foot-col">
+        <h4>İletişim</h4>
+        <ul>
+          <li><a href="mailto:salihcelik.amazon@gmail.com">salihcelik.amazon@gmail.com</a></li>
+          <li>Aydın, Türkiye</li>
+          <li>Basın, iş birliği ve veri sağlayıcı görüşmeleri için yazabilirsiniz.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="colophon">
+      <span>© 2026 Global Flight Hunter</span>
+      <span class="mono">Durum: geliştirme aşamasında · v0.1</span>
+    </div>
+  </div>
+</footer>
+
+<!--
+  Travelpayouts affiliate marker: bir affiliate programına katıldıktan sonra
+  sağlayıcının verdiği marker/doğrulama betiği buraya, </footer> etiketinden
+  hemen önce eklenmelidir. Şu anda hiçbir üçüncü taraf betiği yüklenmiyor;
+  yukarıdaki gizlilik beyanı bu nedenle doğrudur ve bir betik eklendiğinde
+  beyanın da güncellenmesi gerekir.
+-->
+
+</body>
+</html>
