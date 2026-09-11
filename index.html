@@ -1,921 +1,419 @@
 <!doctype html>
-<html lang="tr">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Global Flight Hunter — AI destekli global uçuş fırsatı keşif ve rota optimizasyon uygulaması.">
-<style>
-  :root { color-scheme: light dark; }
-  body { margin: 0; font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-  img { max-width: 100%; }
-  [hidden] { display: none !important; }
-</style>
-<title>Global Flight Hunter</title>
-
+<title>MIA GO — Go further. Pay less.</title>
+<meta name="description" content="MIA GO analyses observed flight prices and alternative routings — nearby airports, flexible dates, separately-ticketed combinations — to help travellers discover better ways to make a journey.">
+<link rel="icon" href="assets/favicon.png" type="image/png">
+<meta property="og:title" content="MIA GO — Go further. Pay less.">
+<meta property="og:description" content="A flight discovery and route-arbitrage product. Observed prices, stated plainly.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="assets/app-hacker.jpg">
+<meta name="theme-color" content="#0B1220">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
-
-<style>
-  /* ==========================================================================
-     Global Flight Hunter — landing page
-
-     Palette, type scale and spacing are taken from the project's own design
-     system (docs/DESIGN_SYSTEM.md), not invented here: the ink/aurora/jade
-     token set, Inter Tight for display, Inter for body. IBM Plex Mono carries
-     the aviation-data role — IATA codes, flight numbers, times — because that
-     material reads as instrument output, not prose.
-
-     Dark-first by design decision, with a complete light palette so the page
-     holds on either host ground.
-     ========================================================================== */
-
-  :root {
-    /* --- light palette (complete, defined first) */
-    --bg-canvas:        #F2F5F9;
-    --bg-surface:       #FFFFFF;
-    --bg-raised:        #FFFFFF;
-    --bg-sunken:        #E2E7EE;
-    --bg-board:         #0B0E13;   /* the board stays dark in both themes */
-
-    --border-subtle:    #E2E7EE;
-    --border-default:   #C6CDD8;
-    --border-strong:    #A6B0BF;
-
-    --text-primary:     #0B0E13;
-    --text-secondary:   #2A3342;
-    --text-tertiary:    #55637A;
-    --text-on-board:    #F2F5F9;
-    --text-on-board-dim:#7A8798;
-
-    --brand:            #1E6BFF;
-    --brand-soft:       rgba(30,107,255,0.10);
-    --brand-line:       rgba(30,107,255,0.28);
-
-    --deal:             #059669;
-    --deal-soft:        rgba(5,150,105,0.10);
-    --warn:             #D97706;
-    --anomaly:          #7C3AED;
-
-    --shadow-card:      0 1px 2px rgba(11,14,19,.05), 0 8px 24px rgba(11,14,19,.06);
-    --shadow-board:     0 24px 64px rgba(7,9,12,.28);
-
-    --rail: 1px;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      --bg-canvas:        #07090C;
-      --bg-surface:       #0B0E13;
-      --bg-raised:        #10141B;
-      --bg-sunken:        #0B0E13;
-      --bg-board:         #10141B;
-
-      --border-subtle:    #151A23;
-      --border-default:   #1D2430;
-      --border-strong:    #2A3342;
-
-      --text-primary:     #F2F5F9;
-      --text-secondary:   #A6B0BF;
-      --text-tertiary:    #55637A;
-      --text-on-board:    #F2F5F9;
-      --text-on-board-dim:#7A8798;
-
-      --brand:            #3B82F6;
-      --brand-soft:       rgba(59,130,246,0.14);
-      --brand-line:       rgba(59,130,246,0.30);
-
-      --deal:             #34D399;
-      --deal-soft:        rgba(52,211,153,0.12);
-      --warn:             #FBBF24;
-      --anomaly:          #A78BFA;
-
-      --shadow-card:      none;
-      --shadow-board:     0 24px 64px rgba(0,0,0,.5);
-    }
-  }
-
-  :root[data-theme="dark"] {
-    --bg-canvas:        #07090C;
-    --bg-surface:       #0B0E13;
-    --bg-raised:        #10141B;
-    --bg-sunken:        #0B0E13;
-    --bg-board:         #10141B;
-
-    --border-subtle:    #151A23;
-    --border-default:   #1D2430;
-    --border-strong:    #2A3342;
-
-    --text-primary:     #F2F5F9;
-    --text-secondary:   #A6B0BF;
-    --text-tertiary:    #55637A;
-    --text-on-board:    #F2F5F9;
-    --text-on-board-dim:#7A8798;
-
-    --brand:            #3B82F6;
-    --brand-soft:       rgba(59,130,246,0.14);
-    --brand-line:       rgba(59,130,246,0.30);
-
-    --deal:             #34D399;
-    --deal-soft:        rgba(52,211,153,0.12);
-    --warn:             #FBBF24;
-    --anomaly:          #A78BFA;
-
-    --shadow-card:      none;
-    --shadow-board:     0 24px 64px rgba(0,0,0,.5);
-  }
-
-  * { box-sizing: border-box; }
-
-  body {
-    margin: 0;
-    background: var(--bg-canvas);
-    color: var(--text-primary);
-    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-    font-size: 16px;
-    line-height: 1.55;
-    -webkit-font-smoothing: antialiased;
-  }
-
-  .wrap {
-    max-width: 1080px;
-    margin: 0 auto;
-    padding: 0 24px;
-  }
-
-  /* A single left rail runs the length of the page and ties the sections
-     together — the structural device instead of a stack of floating cards. */
-  .rail {
-    border-left: var(--rail) solid var(--border-subtle);
-    padding-left: 28px;
-  }
-
-  h1, h2, h3 {
-    font-family: 'Inter Tight', 'Inter', system-ui, sans-serif;
-    text-wrap: balance;
-    margin: 0;
-  }
-
-  .eyebrow {
-    font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: .14em;
-    text-transform: uppercase;
-    color: var(--text-tertiary);
-  }
-
-  .mono { font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace; }
-  .num  { font-variant-numeric: tabular-nums; }
-
-  a { color: var(--brand); text-decoration: none; }
-  a:hover { text-decoration: underline; }
-  a:focus-visible,
-  .cta:focus-visible {
-    outline: 2px solid var(--brand);
-    outline-offset: 3px;
-    border-radius: 4px;
-  }
-
-  /* ---------------------------------------------------------------- header */
-  header {
-    border-bottom: 1px solid var(--border-subtle);
-    background: var(--bg-canvas);
-  }
-  .head-inner {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    flex-wrap: wrap;
-    padding: 18px 0;
-  }
-  .wordmark {
-    display: flex;
-    align-items: baseline;
-    gap: 10px;
-  }
-  .wordmark .mark {
-    font-family: 'Inter Tight', sans-serif;
-    font-weight: 700;
-    font-size: 17px;
-    letter-spacing: -.02em;
-  }
-  .wordmark .tld {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 11px;
-    color: var(--text-tertiary);
-    letter-spacing: .1em;
-  }
-
-  .status {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 6px 12px;
-    border: 1px solid var(--border-default);
-    border-radius: 999px;
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--text-secondary);
-    background: var(--bg-surface);
-  }
-  .dot {
-    width: 6px; height: 6px;
-    border-radius: 999px;
-    background: var(--warn);
-    flex: none;
-  }
-
-  /* ---------------------------------------------------------------- hero */
-  .hero { padding: 72px 0 8px; }
-
-  .hero-grid {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: 44px;
-  }
-  @media (min-width: 940px) {
-    .hero-grid { grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr); gap: 56px; align-items: start; }
-  }
-
-  h1 {
-    font-size: clamp(38px, 6.2vw, 60px);
-    line-height: 1.02;
-    font-weight: 700;
-    letter-spacing: -.035em;
-    margin-bottom: 20px;
-  }
-  h1 .accent { color: var(--brand); }
-
-  .lede {
-    font-size: 17px;
-    color: var(--text-secondary);
-    max-width: 60ch;
-    margin: 0 0 18px;
-  }
-  .lede strong { color: var(--text-primary); font-weight: 600; }
-
-  .dev-note {
-    display: flex;
-    gap: 12px;
-    align-items: flex-start;
-    padding: 14px 16px;
-    border: 1px solid var(--border-default);
-    border-left: 3px solid var(--warn);
-    border-radius: 0 10px 10px 0;
-    background: var(--bg-surface);
-    font-size: 14px;
-    color: var(--text-secondary);
-    max-width: 60ch;
-    margin-top: 24px;
-  }
-  .dev-note b { color: var(--text-primary); }
-
-  /* ---------------------------------------------------------------- board */
-  /* The thesis of the product, shown rather than described: one classic route,
-     one decomposed route, and the gap between them. */
-  .board {
-    background: var(--bg-board);
-    border: 1px solid var(--border-strong);
-    border-radius: 14px;
-    padding: 22px;
-    box-shadow: var(--shadow-board);
-    color: var(--text-on-board);
-    overflow-x: auto;
-  }
-
-  .board-head {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    gap: 12px;
-    padding-bottom: 14px;
-    border-bottom: 1px solid rgba(166,176,191,.16);
-  }
-  .board-head .eyebrow { color: var(--text-on-board-dim); }
-
-  .board-example {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 10.5px;
-    letter-spacing: .08em;
-    text-transform: uppercase;
-    color: var(--warn);
-    border: 1px solid rgba(251,191,36,.35);
-    border-radius: 999px;
-    padding: 3px 8px;
-    white-space: nowrap;
-  }
-
-  .classic {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    gap: 16px;
-    padding: 16px 0 14px;
-    border-bottom: 1px dashed rgba(166,176,191,.22);
-  }
-  .classic-route {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 15px;
-    font-weight: 500;
-    color: var(--text-on-board-dim);
-  }
-  .classic-price {
-    font-family: 'Inter Tight', sans-serif;
-    font-size: 20px;
-    font-weight: 600;
-    color: var(--text-on-board-dim);
-    text-decoration: line-through;
-    text-decoration-thickness: 1.5px;
-  }
-
-  .segments {
-    list-style: none;
-    margin: 16px 0 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-  }
-  .seg {
-    display: grid;
-    grid-template-columns: 76px minmax(0,1fr) auto;
-    align-items: center;
-    gap: 14px;
-    padding: 11px 10px;
-    border-radius: 8px;
-    background: rgba(59,130,246,.05);
-    animation: seg-in .42s cubic-bezier(0,0,0,1) both;
-  }
-  .seg:nth-child(1) { animation-delay: .05s; }
-  .seg:nth-child(2) { animation-delay: .16s; }
-  .seg:nth-child(3) { animation-delay: .27s; }
-
-  @keyframes seg-in {
-    from { opacity: .55; transform: translateY(6px); }
-    to   { opacity: 1;   transform: translateY(0); }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .seg { animation: none; }
-  }
-
-  .seg-pair {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 14px;
-    font-weight: 600;
-    letter-spacing: .02em;
-    color: var(--text-on-board);
-  }
-  .seg-meta {
-    font-size: 12.5px;
-    color: var(--text-on-board-dim);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  .seg-price {
-    font-family: 'Inter Tight', sans-serif;
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--text-on-board);
-    font-variant-numeric: tabular-nums;
-  }
-
-  .board-total {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    gap: 16px;
-    margin-top: 16px;
-    padding-top: 15px;
-    border-top: 1px solid rgba(166,176,191,.16);
-  }
-  .board-total .label {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 11px;
-    letter-spacing: .12em;
-    text-transform: uppercase;
-    color: var(--text-on-board-dim);
-  }
-  .board-total .value {
-    font-family: 'Inter Tight', sans-serif;
-    font-size: 26px;
-    font-weight: 700;
-    letter-spacing: -.02em;
-    font-variant-numeric: tabular-nums;
-  }
-  .saving .value { color: var(--deal); }
-
-  .board-flags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 16px;
-  }
-  .flag {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 11px;
-    letter-spacing: .04em;
-    padding: 4px 9px;
-    border-radius: 6px;
-    border: 1px solid rgba(166,176,191,.24);
-    color: var(--text-on-board-dim);
-  }
-  .flag.warn { color: var(--warn); border-color: rgba(251,191,36,.35); }
-  .flag.deal { color: var(--deal); border-color: rgba(52,211,153,.35); }
-
-  /* ---------------------------------------------------------------- sections */
-  section { padding: 64px 0; }
-  .section-head { margin-bottom: 32px; }
-  .section-head h2 {
-    font-size: clamp(24px, 3.2vw, 30px);
-    font-weight: 600;
-    letter-spacing: -.025em;
-    margin-top: 10px;
-  }
-  .section-head p {
-    color: var(--text-secondary);
-    max-width: 62ch;
-    margin: 12px 0 0;
-    font-size: 15.5px;
-  }
-
-  /* Capability list — an operations panel, not marketing cards. */
-  .caps {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: 0;
-    border-top: 1px solid var(--border-subtle);
-  }
-  @media (min-width: 760px) {
-    .caps { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 40px; }
-  }
-  .cap {
-    display: grid;
-    grid-template-columns: 34px minmax(0, 1fr);
-    gap: 16px;
-    padding: 22px 0;
-    border-bottom: 1px solid var(--border-subtle);
-  }
-  .cap-key {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: .06em;
-    color: var(--brand);
-    padding-top: 3px;
-  }
-  .cap h3 {
-    font-size: 16px;
-    font-weight: 600;
-    letter-spacing: -.01em;
-    margin-bottom: 5px;
-  }
-  .cap p {
-    margin: 0;
-    font-size: 14.5px;
-    color: var(--text-secondary);
-  }
-
-  /* Pipeline — genuinely ordered, so the numbering carries information. */
-  .pipeline {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: 14px;
-    counter-reset: step;
-  }
-  @media (min-width: 860px) {
-    .pipeline { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
-  }
-  .step {
-    position: relative;
-    padding: 20px 18px;
-    background: var(--bg-surface);
-    border: 1px solid var(--border-subtle);
-    border-radius: 10px;
-    box-shadow: var(--shadow-card);
-  }
-  .step::before {
-    counter-increment: step;
-    content: counter(step, decimal-leading-zero);
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--text-tertiary);
-    display: block;
-    margin-bottom: 10px;
-  }
-  .step h3 { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
-  .step p { margin: 0; font-size: 13.5px; color: var(--text-secondary); }
-  .step .cost {
-    display: inline-block;
-    margin-top: 12px;
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 10.5px;
-    letter-spacing: .06em;
-    text-transform: uppercase;
-    color: var(--deal);
-    background: var(--deal-soft);
-    border-radius: 5px;
-    padding: 3px 7px;
-  }
-  .step .cost.high { color: var(--warn); background: rgba(217,119,6,.10); }
-
-  /* Status / honesty block */
-  .status-grid {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: 28px;
-  }
-  @media (min-width: 760px) {
-    .status-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 44px; }
-  }
-  .status-col h3 {
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: .02em;
-    margin-bottom: 14px;
-    color: var(--text-primary);
-  }
-  .status-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
-  .status-list li {
-    display: grid;
-    grid-template-columns: 18px minmax(0, 1fr);
-    gap: 10px;
-    font-size: 14.5px;
-    color: var(--text-secondary);
-    align-items: start;
-  }
-  .status-list .tick { color: var(--deal); font-weight: 600; line-height: 1.5; }
-  .status-list .todo { color: var(--text-tertiary); line-height: 1.5; }
-
-  /* English block */
-  .english {
-    border: 1px solid var(--border-subtle);
-    border-radius: 12px;
-    background: var(--bg-surface);
-    padding: 26px 28px;
-    max-width: 74ch;
-    box-shadow: var(--shadow-card);
-  }
-  .english h2 { font-size: 17px; font-weight: 600; margin-bottom: 10px; }
-  .english p { margin: 0 0 10px; font-size: 14.5px; color: var(--text-secondary); }
-  .english p:last-child { margin-bottom: 0; }
-
-  /* ---------------------------------------------------------------- footer */
-  footer {
-    border-top: 1px solid var(--border-subtle);
-    padding: 40px 0 56px;
-    margin-top: 24px;
-  }
-  .foot-grid {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: 28px;
-  }
-  @media (min-width: 760px) {
-    .foot-grid { grid-template-columns: 1.2fr 1fr 1fr; gap: 40px; }
-  }
-  .foot-col h4 {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 10.5px;
-    font-weight: 600;
-    letter-spacing: .12em;
-    text-transform: uppercase;
-    color: var(--text-tertiary);
-    margin: 0 0 12px;
-  }
-  .foot-col p, .foot-col li {
-    font-size: 13.5px;
-    color: var(--text-secondary);
-    margin: 0 0 8px;
-  }
-  .foot-col ul { list-style: none; margin: 0; padding: 0; }
-  .colophon {
-    margin-top: 32px;
-    padding-top: 20px;
-    border-top: 1px solid var(--border-subtle);
-    font-size: 12.5px;
-    color: var(--text-tertiary);
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px 18px;
-    justify-content: space-between;
-  }
-</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
+<a class="skip" href="#what">Skip to content</a>
 
-<header>
-  <div class="wrap head-inner">
-    <div class="wordmark">
-      <span class="mark">GLOBAL FLIGHT HUNTER</span>
-      <span class="tld mono">GFH</span>
-    </div>
-    <span class="status"><span class="dot"></span>Geliştirme aşamasında · v0.1</span>
+<header class="bar">
+  <div class="wrap bar-inner">
+    <a class="lockup" href="#top" aria-label="MIA GO — home">
+      <img src="assets/miago-glyph.svg" alt="" width="34" height="24" class="glyph">
+      <span class="wordmark">MIA<span class="go">GO</span></span>
+    </a>
+    <nav class="bar-nav" aria-label="Sections">
+      <a href="#what">Product</a>
+      <a href="#verification">Verification</a>
+      <a href="#coverage">Data</a>
+      <a href="#contact" class="bar-cta">Contact</a>
+    </nav>
   </div>
 </header>
 
-<main>
-  <!-- ================================================================ hero -->
-  <div class="wrap hero">
-    <div class="hero-grid">
-      <div>
-        <p class="eyebrow">Uçuş arbitrajı · keşif · fiyat zekâsı</p>
-        <h1>Ucuz uçuşu aramayı bırak.<br><span class="accent">Ucuz yolu</span> bulalım.</h1>
+<main id="top">
 
+  <!-- ============================================================== hero -->
+  <section class="hero">
+    <div class="wrap hero-inner">
+      <div class="hero-copy">
+        <p class="eyebrow">Flight discovery &amp; route arbitrage · Türkiye</p>
+        <h1>Go further.<br><span class="gold">Pay less.</span></h1>
         <p class="lede">
-          <strong>AI destekli global uçuş fırsatı keşif ve rota optimizasyon uygulaması.</strong>
-          Nereye gitmek istediğini bilmene gerek yok — bütçeni ve zamanını söyle,
-          dünyayı biz tarayalım.
+          Most flight search asks where you want to go and then compares prices on
+          that one route. MIA GO asks a different question: <strong>what is the
+          cheapest <em>way</em> to make this journey?</strong> Nearby departure
+          airports, flexible dates, separately-ticketed combinations, gateway
+          routings — scored for connection risk and for what they really cost.
         </p>
-
-        <p class="lede">
-          Klasik arama motorları hazır güzergâhları karşılaştırır. Global Flight Hunter
-          bunun bir adım ötesine geçer: alternatif kalkış havalimanları, esnek tarihler
-          ve ayrı biletlerden kurulu kombinasyonlar üreterek klasik aramanın hiç
-          göstermediği yolları çıkarır — ve her fiyatı kendi geçmişiyle karşılaştırarak
-          gerçekten ucuz olup olmadığını söyler.
-        </p>
-
-        <div class="dev-note">
-          <span aria-hidden="true">◆</span>
-          <span>
-            <b>Uygulama şu anda geliştirme aşamasındadır.</b> Henüz yayında değil ve
-            bilet satışı yapmıyoruz. Bu sayfa projenin kamuya açık tanıtım sayfasıdır;
-            veri sağlayıcı entegrasyonu ve doğrulama çalışmaları sürüyor.
-          </span>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#what">See what it does</a>
+          <a class="btn btn-ghost" href="#verification">How we handle prices</a>
         </div>
+        <p class="status">
+          <span class="dot" aria-hidden="true"></span>
+          In development · v0.1 · not yet released · MIA GO does not sell tickets
+        </p>
       </div>
+      <div class="hero-mark" aria-hidden="true">
+        <img src="assets/miago-logo.svg" alt="" width="360" height="250">
+      </div>
+    </div>
+  </section>
 
-      <!-- The product's thesis, shown as a departure-board style breakdown. -->
-      <div class="board" role="figure" aria-label="Örnek rota ayrıştırma senaryosu">
-        <div class="board-head">
-          <span class="eyebrow">Rota ayrıştırma</span>
-          <span class="board-example">Örnek senaryo — gerçek fiyat değil</span>
-        </div>
+  <!-- ============================================================== what -->
+  <section id="what" class="band">
+    <div class="wrap">
+      <h2 class="section-title">What MIA GO is</h2>
+      <p class="section-lede">
+        A discovery engine, not a booking site. It reads a large body of
+        <strong>observed</strong> price data, builds alternative ways to make the
+        same journey, and explains what each one costs you — in money, in time,
+        and in the risk you take on.
+      </p>
 
-        <div class="classic">
-          <span class="classic-route">IST → BKK · direkt arama</span>
-          <span class="classic-price num">₺17.850</span>
-        </div>
+      <div class="grid grid-3">
+        <article class="card">
+          <h3>It starts from a budget</h3>
+          <p>
+            You can search a route the ordinary way. You can also say
+            <em>“somewhere warm in November, under 10,000 TRY, up to 8 nights”</em>
+            and let the engine pick the destination.
+          </p>
+        </article>
+        <article class="card">
+          <h3>It shows its working</h3>
+          <p>
+            Every price on screen carries where it came from and when it was
+            seen. Nothing is presented as a live, bookable fare unless it has
+            actually been checked.
+          </p>
+        </article>
+        <article class="card">
+          <h3>It states the cost of cheap</h3>
+          <p>
+            A cheaper combination usually means a longer journey, a self-transfer
+            or a second ticket. Those are shown next to the saving, not below the
+            fold.
+          </p>
+        </article>
+      </div>
+    </div>
+  </section>
 
-        <ul class="segments">
-          <li class="seg">
-            <span class="seg-pair">ADB → SAW</span>
-            <span class="seg-meta">Positioning uçuşu · 1s 15dk</span>
-            <span class="seg-price">₺1.100</span>
-          </li>
-          <li class="seg">
-            <span class="seg-pair">SAW → AUH</span>
-            <span class="seg-meta">Ayrı bilet · 4s 30dk</span>
-            <span class="seg-price">₺2.450</span>
-          </li>
-          <li class="seg">
-            <span class="seg-pair">AUH → BKK</span>
-            <span class="seg-meta">Ayrı bilet · 6s 20dk</span>
-            <span class="seg-price">₺5.250</span>
-          </li>
+  <!-- ================================================== smart discovery -->
+  <section id="discovery" class="band alt">
+    <div class="wrap split">
+      <div class="split-copy">
+        <p class="eyebrow">01 — Smart Flight Discovery</p>
+        <h2>Search without naming a destination</h2>
+        <p>
+          Conventional search needs an origin, a destination and a date before it
+          can answer anything. That is fine when you know where you are going, and
+          useless when your real constraint is a budget and a week off work.
+        </p>
+        <p>
+          MIA GO takes the constraints you actually have — a budget ceiling, a
+          month, a trip length, a vague idea like “somewhere warm” — and searches
+          outward from them. The natural-language box parses that sentence into
+          constraints; it does not invent prices, it only decides what to look for.
+        </p>
+        <ul class="ticks">
+          <li>Budget-first and date-flexible discovery</li>
+          <li>Destination suggestions ranked against each route’s own price history</li>
+          <li>A map view for browsing by region rather than by list</li>
         </ul>
-
-        <div class="board-total">
-          <span class="label">Toplam</span>
-          <span class="value num">₺8.800</span>
-        </div>
-        <div class="board-total saving">
-          <span class="label">Tasarruf</span>
-          <span class="value num">₺9.050</span>
-        </div>
-
-        <div class="board-flags">
-          <span class="flag deal">Fırsat puanı 96/100</span>
-          <span class="flag warn">Risk: Orta</span>
-          <span class="flag">Self-transfer: Evet</span>
-          <span class="flag">3 ayrı bilet</span>
-        </div>
       </div>
+      <figure class="phone">
+        <img src="assets/app-discover.jpg" alt="MIA GO discovery screen: a natural-language search box and a list of destination deals, each labelled OBSERVED · not live." loading="lazy" width="720" height="1558">
+        <figcaption>Discovery. Note the <span class="mono">OBSERVED · not live</span> label under every price.</figcaption>
+      </figure>
     </div>
-  </div>
+  </section>
 
-  <!-- ============================================================ features -->
-  <section>
-    <div class="wrap rail">
-      <div class="section-head">
-        <p class="eyebrow">Ne yapıyor</p>
-        <h2>Dört temel yetenek</h2>
+  <!-- ====================================================== flight hacker -->
+  <section id="hacker" class="band">
+    <div class="wrap split reverse">
+      <div class="split-copy">
+        <p class="eyebrow">02 — Flight Hacker</p>
+        <h2>The cheapest <em>way</em>, not the cheapest listing</h2>
         <p>
-          Hepsi tek bir soruya hizmet ediyor: bu parayı vermeye değer mi, ve daha
-          iyi bir yolu var mı?
+          This is the part of the product that has to justify itself in three
+          seconds, so it is built as a comparison rather than a list: the ordinary
+          through fare on one side, the combination MIA GO assembled on the other,
+          and the difference stated in both directions.
+        </p>
+        <div class="compare" role="img" aria-label="Example comparison: a through fare of 22,245 TRY against a MIA GO route of 17,971 TRY, saving 4,274 TRY or 19.2 per cent, at the cost of 1 hour 15 minutes more flying and a self-transfer.">
+          <div class="compare-col">
+            <span class="compare-label">Through fare</span>
+            <span class="compare-price struck">TRY 22,245</span>
+            <span class="compare-meta">Direct · 10h 25m in the air</span>
+          </div>
+          <div class="compare-col right">
+            <span class="compare-label gold">MIA GO route</span>
+            <span class="compare-price">TRY 17,971</span>
+            <span class="compare-meta">1 stop · 11h 40m in the air</span>
+          </div>
+          <p class="compare-save">
+            <strong>TRY 4,274 saved · 19.2%</strong>
+            <span>1h 15m longer</span>
+          </p>
+          <p class="compare-take">
+            <span class="bar-amber" aria-hidden="true"></span>
+            Self-transfer — if you are late, the second ticket is not protected
+          </p>
+        </div>
+        <p class="small">
+          An illustration built from real observed data on İzmir→London. It is an
+          example of the screen, not an offer.
         </p>
       </div>
+      <figure class="phone">
+        <img src="assets/app-hacker.jpg" alt="MIA GO results screen showing a through fare compared against a cheaper multi-ticket combination, with the saving and the extra travel time side by side." loading="lazy" width="720" height="1558">
+        <figcaption>Why it is cheaper, and what you take on, in the same block.</figcaption>
+      </figure>
+    </div>
+  </section>
 
-      <div class="caps">
-        <div class="cap">
-          <span class="cap-key">01</span>
-          <div>
-            <h3>Ucuz uçuş keşfi</h3>
-            <p>
-              Destinasyon girmeden arama. Bütçe, zaman penceresi ve seyahat süresini
-              ver; dünyadaki uygun noktalar harita üzerinde fiyat baloncuğu olarak çıksın.
-            </p>
-          </div>
-        </div>
-
-        <div class="cap">
-          <span class="cap-key">02</span>
-          <div>
-            <h3>Esnek tarih taraması</h3>
-            <p>
-              Tek bir güne kilitlenme. ±1, 3, 7, 14 veya 30 gün penceresinde en ucuz
-              kalkış–dönüş kombinasyonlarını ay ızgarası üzerinde gör.
-            </p>
-          </div>
-        </div>
-
-        <div class="cap">
-          <span class="cap-key">03</span>
-          <div>
-            <h3>Alternatif havalimanı</h3>
-            <p>
-              İzmir'den uçmak zorunda değilsin. Yakın havalimanları ve gerekirse bir
-              positioning uçuşu hesaba katılır — ulaşım maliyeti tasarrufu yiyorsa
-              öneri gösterilmez.
-            </p>
-          </div>
-        </div>
-
-        <div class="cap">
-          <span class="cap-key">04</span>
-          <div>
-            <h3>Fırsat alarmları</h3>
-            <p>
-              Rota, şehir, ülke ya da &ldquo;herhangi bir yer&rdquo; için alarm kur.
-              Fiyat hedefinin altına düştüğünde ya da geçmişine göre olağandışı
-              ucuzladığında bildirim gelsin.
-            </p>
-          </div>
-        </div>
+  <!-- =================================================== price intelligence -->
+  <section id="intelligence" class="band alt">
+    <div class="wrap">
+      <p class="eyebrow">03 — Price Intelligence</p>
+      <h2 class="section-title">Is this actually a good price?</h2>
+      <p class="section-lede">
+        A number on its own means nothing. MIA GO keeps a history of the prices it
+        has observed on a route and places the current one against that history —
+        or says plainly that it cannot.
+      </p>
+      <div class="grid grid-3">
+        <article class="card">
+          <h3>Enough evidence</h3>
+          <p>The price is placed against the route’s own observed median, with the sample size shown.</p>
+        </article>
+        <article class="card">
+          <h3>Thin evidence</h3>
+          <p>We say how many observations we have and decline to rank the price. A percentile from four data points is a guess wearing a number.</p>
+        </article>
+        <article class="card">
+          <h3>No evidence</h3>
+          <p>“We have no past observations for this route” — followed by what that does <em>not</em> mean: it is not a claim that the price is bad.</p>
+        </article>
       </div>
     </div>
   </section>
 
-  <!-- ============================================================ pipeline -->
-  <section>
-    <div class="wrap rail">
-      <div class="section-head">
-        <p class="eyebrow">Nasıl çalışıyor</p>
-        <h2>Pahalı sorgu en sona bırakılır</h2>
-        <p>
-          Dünyadaki her rota için kör API çağrısı yapmak hem yavaş hem sürdürülemez.
-          Sıra burada bilgi taşır: her adım bir sonrakinin maliyetini düşürür.
-        </p>
-      </div>
-
-      <div class="pipeline">
-        <div class="step">
-          <h3>Aday üretimi</h3>
-          <p>Rota grafiği, coğrafya ve mevsim kısıtlarıyla makul destinasyonlar seçilir.</p>
-          <span class="cost">Ağ kullanılmaz</span>
-        </div>
-        <div class="step">
-          <h3>İstatistik filtresi</h3>
-          <p>Rotanın kendi fiyat geçmişi bütçeye uymayan adayları daha sorulmadan eler.</p>
-          <span class="cost">Ağ kullanılmaz</span>
-        </div>
-        <div class="step">
-          <h3>Fiyat taraması</h3>
-          <p>Kalan adaylar için gözlemlenmiş fiyatlar çekilir ve fırsat puanı hesaplanır.</p>
-          <span class="cost">Önbellekli</span>
-        </div>
-        <div class="step">
-          <h3>Canlı doğrulama</h3>
-          <p>Yalnızca en iyi birkaç aday için, yalnızca sen istediğinde canlı sorgu yapılır.</p>
-          <span class="cost high">Seçici</span>
-        </div>
+  <!-- ================================================ flexible / nearby -->
+  <section id="flexible" class="band">
+    <div class="wrap">
+      <p class="eyebrow">04 — Flexible dates &amp; nearby airports</p>
+      <h2 class="section-title">The two cheapest levers most people never pull</h2>
+      <div class="grid grid-2">
+        <article class="card tall">
+          <h3>Move the dates</h3>
+          <p>
+            A calendar grid across a month, showing where the cheap
+            departure–return pairs actually fall rather than making you probe one
+            date at a time.
+          </p>
+        </article>
+        <article class="card tall">
+          <h3>Move the airport</h3>
+          <p>
+            İzmir instead of İstanbul; London Stansted instead of Heathrow. Where
+            a positioning leg is worth it, MIA GO builds it — and adds the ground
+            transfer to the total, because a fare that ignores the transfer is not
+            a total.
+          </p>
+        </article>
       </div>
     </div>
   </section>
 
-  <!-- ============================================================== status -->
-  <section>
-    <div class="wrap rail">
-      <div class="section-head">
-        <p class="eyebrow">Şeffaflık</p>
-        <h2>Bugün nerede</h2>
+  <!-- ========================================================= alerts -->
+  <section id="alerts" class="band alt">
+    <div class="wrap split">
+      <div class="split-copy">
+        <p class="eyebrow">05 — Price Alerts</p>
+        <h2>Watch a route without watching a route</h2>
         <p>
-          Ürün henüz yayında değil. Neyin hazır olduğunu ve neyin olmadığını açıkça
-          yazıyoruz — çünkü fiyat gösteren bir ürünün ilk borcu dürüstlüktür.
+          Set a route, a budget ceiling and a date range. MIA GO evaluates it
+          against newly observed prices and notifies you when the route falls
+          below your ceiling, or when a price looks unusual against that route’s
+          own history.
+        </p>
+        <ul class="ticks">
+          <li>Alerts are stored against an anonymous installation identifier — no account, no email address</li>
+          <li>A notification says which observation triggered it and when it was seen</li>
+          <li>You can delete an alert, and everything tied to your installation, from inside the app</li>
+        </ul>
+      </div>
+      <figure class="phone">
+        <img src="assets/app-detail.jpg" alt="MIA GO flight detail screen showing the route leg by leg with departure times, a connection warning, price intelligence and the verification panel." loading="lazy" width="720" height="1558">
+        <figcaption>Flight detail: every leg, every connection, and the state of the price.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- =================================================== verification -->
+  <section id="verification" class="band">
+    <div class="wrap">
+      <p class="eyebrow">06 — Live price verification</p>
+      <h2 class="section-title">Where we are honest about what we do not have</h2>
+
+      <div class="notice">
+        <p class="notice-flag">Live verification provider integration in progress</p>
+        <p>
+          MIA GO runs on <strong>observed</strong> price data: prices seen in real
+          searches, cached by the data provider, typically hours to a few days
+          old. That is what makes a price history — and therefore Price
+          Intelligence — possible at all. It is <em>not</em> a live, bookable fare,
+          and the product never claims it is.
+        </p>
+        <p>
+          The one place a live query belongs is at the point of decision: a person
+          has chosen an itinerary and pressed <strong>“Verify the price.”</strong>
+          That path is built and running end to end. What it does not have yet is a
+          live provider behind it, and we are applying for one.
         </p>
       </div>
 
-      <div class="status-grid">
-        <div class="status-col">
-          <h3>Tamamlanan</h3>
-          <ul class="status-list">
-            <li><span class="tick" aria-hidden="true">✓</span><span>Ürün mimarisi ve teknik tasarım dokümantasyonu</span></li>
-            <li><span class="tick" aria-hidden="true">✓</span><span>Fırsat puanı, rota riski ve gerçek maliyet motorları</span></li>
-            <li><span class="tick" aria-hidden="true">✓</span><span>Çoklu veri sağlayıcı soyutlama katmanı</span></li>
-            <li><span class="tick" aria-hidden="true">✓</span><span>Mobil uygulama iskeleti ve tasarım sistemi</span></li>
+      <div class="grid grid-2">
+        <article class="card">
+          <h3>What is already built</h3>
+          <ul class="ticks tight">
+            <li>A provider contract with four operations: price, availability, booking URL, verify</li>
+            <li>Seven explicit states, including <span class="mono">NOT&nbsp;VERIFIED</span>, <span class="mono">PROVIDER&nbsp;ERROR</span> and <span class="mono">RATE&nbsp;LIMITED</span></li>
+            <li>Both numbers shown when a price has moved — never a silent update</li>
+            <li>The recommendation re-checked after verification, and withdrawn if the advantage is gone</li>
+            <li>Booking links validated against a per-provider host allowlist before they can open</li>
+            <li>A short cache so repeated taps cost one provider call — and which always reports how old the answer is</li>
           </ul>
-        </div>
-        <div class="status-col">
-          <h3>Devam eden</h3>
-          <ul class="status-list">
-            <li><span class="todo" aria-hidden="true">○</span><span>Uçuş veri sağlayıcı entegrasyonu ve kapsam doğrulaması</span></li>
-            <li><span class="todo" aria-hidden="true">○</span><span>Fiyat geçmişi biriktirme ve mevsimsellik analizi</span></li>
-            <li><span class="todo" aria-hidden="true">○</span><span>Harita tabanlı keşif arayüzü</span></li>
-            <li><span class="todo" aria-hidden="true">○</span><span>iOS ve Android beta sürümü</span></li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="dev-note" style="margin-top:36px; max-width:74ch;">
-        <span aria-hidden="true">◆</span>
-        <span>
-          <b>Fiyatlar hakkında.</b> Uygulama yayına girdiğinde gösterilen fiyatların
-          çoğu <em>gözlemlenmiş</em> fiyatlar olacak — canlı ve rezerve edilebilir
-          fiyatlar değil. Her fiyatın yanında ne zaman gözlendiği yazacak. Bu bir
-          eksiklik değil, bilinçli bir tasarım kararı: kullanıcı ne gördüğünü bilmeli.
-        </span>
+        </article>
+        <article class="card">
+          <h3>What that means today</h3>
+          <p>
+            With no live provider connected, pressing “Verify the price” returns
+            <span class="mono">NOT VERIFIED</span> — the honest answer — rather
+            than a confirmation the product cannot stand behind.
+          </p>
+          <p>
+            A live query is only ever made in direct response to that user action.
+            It is never made from a background job, and that rule is enforced in
+            code rather than by convention.
+          </p>
+        </article>
       </div>
     </div>
   </section>
 
-  <!-- ============================================================= english -->
-  <section>
-    <div class="wrap rail">
-      <div class="english">
-        <p class="eyebrow">In English</p>
-        <h2>About Global Flight Hunter</h2>
-        <p>
-          Global Flight Hunter is an AI-assisted global flight deal discovery and
-          route optimisation application, currently <strong>in active development</strong>.
-        </p>
-        <p>
-          Instead of requiring a fixed origin, destination and date, it starts from a
-          budget and a time window and searches for viable destinations worldwide. It
-          builds alternative itineraries — nearby departure airports, flexible dates,
-          split tickets and self-transfer combinations — that conventional search does
-          not surface, and scores every fare against that route's own price history so
-          travellers can tell a genuine deal from an ordinary one.
-        </p>
-        <p>
-          The product is not yet released and does not sell tickets. This page is the
-          project's public information page.
-        </p>
+  <!-- ======================================================= coverage -->
+  <section id="coverage" class="band alt">
+    <div class="wrap">
+      <p class="eyebrow">07 — Coverage &amp; data transparency</p>
+      <h2 class="section-title">What we know, and where we are blind</h2>
+      <p class="section-lede">
+        Coverage is uneven, and the product says so on the screen rather than
+        filling gaps with something plausible. A route with no observations
+        produces an explicit “no data” state — never an invented price and never a
+        confident-looking empty list.
+      </p>
+
+      <div class="grid grid-3 stats">
+        <div class="stat">
+          <span class="stat-num">Observed</span>
+          <span class="stat-label">Every discovery price is a cached observation, labelled with its source and age</span>
+        </div>
+        <div class="stat">
+          <span class="stat-num">No&nbsp;data</span>
+          <span class="stat-label">A distinct state from “no cheaper option found” — the two mean different things</span>
+        </div>
+        <div class="stat">
+          <span class="stat-num">Thin</span>
+          <span class="stat-label">Some observations, not enough to rank a price, and the product says which</span>
+        </div>
+      </div>
+
+      <p class="small">
+        Current price source: the Travelpayouts Flights Data API, whose terms
+        explicitly permit caching. MIA GO does not scrape, and does not query any
+        provider’s live search from a background job.
+      </p>
+    </div>
+  </section>
+
+  <!-- ====================================================== app preview -->
+  <section id="preview" class="band">
+    <div class="wrap">
+      <h2 class="section-title">The app</h2>
+      <p class="section-lede">
+        React Native, 22 translated languages with a 196-locale catalogue,
+        right-to-left layouts, light and dark themes. Screens below are real
+        builds running on recorded price data.
+      </p>
+      <div class="gallery">
+        <figure class="phone small-phone">
+          <img src="assets/app-discover.jpg" alt="Discovery screen" loading="lazy" width="720" height="1558">
+          <figcaption>Discover</figcaption>
+        </figure>
+        <figure class="phone small-phone">
+          <img src="assets/app-hacker.jpg" alt="Flight Hacker comparison screen" loading="lazy" width="720" height="1558">
+          <figcaption>Flight Hacker</figcaption>
+        </figure>
+        <figure class="phone small-phone">
+          <img src="assets/app-detail.jpg" alt="Flight detail screen" loading="lazy" width="720" height="1558">
+          <figcaption>Flight detail</figcaption>
+        </figure>
       </div>
     </div>
   </section>
+
+  <!-- ========================================================= contact -->
+  <section id="contact" class="band alt">
+    <div class="wrap contact">
+      <h2 class="section-title">Contact</h2>
+      <p class="section-lede">
+        MIA GO is built and operated by an independent developer in Aydın,
+        Türkiye. For partnership, API access or press enquiries:
+      </p>
+      <p class="email">
+        <a href="mailto:salihcelik.amazon@gmail.com">salihcelik.amazon@gmail.com</a>
+      </p>
+      <p class="small">
+        MIA GO does not sell tickets and does not take payments. It links to the
+        sellers whose prices it observes.
+      </p>
+    </div>
+  </section>
+
 </main>
 
-<!-- ================================================================= footer -->
-<footer>
+<footer class="foot">
+  <div class="wrap foot-inner">
+    <div class="foot-brand">
+      <img src="assets/miago-glyph.svg" alt="" width="30" height="21" class="glyph">
+      <span class="wordmark small-mark">MIA<span class="go">GO</span></span>
+      <p class="foot-tag">Go further. Pay less.</p>
+    </div>
+    <nav class="foot-links" aria-label="Legal and contact">
+      <a href="privacy.html">Privacy Policy</a>
+      <a href="terms.html">Terms of Use</a>
+      <a href="mailto:salihcelik.amazon@gmail.com">salihcelik.amazon@gmail.com</a>
+    </nav>
+  </div>
   <div class="wrap">
-    <div class="foot-grid">
-      <div class="foot-col">
-        <h4>Global Flight Hunter</h4>
-        <p>
-          AI destekli global uçuş fırsatı keşif ve rota optimizasyon uygulaması.
-          Geliştirme aşamasında, bağımsız bir proje.
-        </p>
-      </div>
-
-      <div class="foot-col">
-        <h4>Gizlilik</h4>
-        <ul>
-          <li>Bu sayfa statiktir.</li>
-          <li>Çerez kullanılmaz.</li>
-          <li>Analitik veya izleme betiği çalıştırılmaz.</li>
-          <li>Hiçbir kişisel veri toplanmaz veya saklanmaz.</li>
-        </ul>
-      </div>
-
-      <div class="foot-col">
-        <h4>İletişim</h4>
-        <ul>
-          <li><a href="mailto:salihcelik.amazon@gmail.com">salihcelik.amazon@gmail.com</a></li>
-          <li>Aydın, Türkiye</li>
-          <li>Basın, iş birliği ve veri sağlayıcı görüşmeleri için yazabilirsiniz.</li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="colophon">
-      <span>© 2026 Global Flight Hunter</span>
-      <span class="mono">Durum: geliştirme aşamasında · v0.1</span>
-    </div>
+    <p class="foot-note">
+      MIA GO · Aydın, Türkiye · v0.1, in development. Prices shown in the product
+      are observed price data and are not live bookable fares. The Privacy Policy
+      and Terms of Use linked above are <strong>drafts</strong> published for
+      transparency; they are not yet in force and have not been reviewed by a
+      lawyer.
+    </p>
   </div>
 </footer>
-
-<!--
-  Travelpayouts affiliate marker: bir affiliate programına katıldıktan sonra
-  sağlayıcının verdiği marker/doğrulama betiği buraya, </footer> etiketinden
-  hemen önce eklenmelidir. Şu anda hiçbir üçüncü taraf betiği yüklenmiyor;
-  yukarıdaki gizlilik beyanı bu nedenle doğrudur ve bir betik eklendiğinde
-  beyanın da güncellenmesi gerekir.
--->
 
 </body>
 </html>

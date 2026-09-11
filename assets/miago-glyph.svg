@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-4 10 112 78" width="112" height="78" role="img" aria-label="MIA GO">
+  <!--
+    The glyph: the same mark with the globe removed.
+
+    This exists because of one measurement. At 48px the full mark's globe is
+    thirteen pixels across and carries three meridian lines about a pixel
+    apart — they alias into a grey smudge, and a gold smudge sitting on a gold
+    letter reads as a printing error rather than a planet. The branding
+    reference makes the same call: its "Glyph" variant is the M and the flight
+    path, nothing else.
+
+    So: the full mark above ~64px (splash, lockup, marketing), this below it
+    (app icon, adaptive foreground, favicon, header lockup, tab bar).
+
+    The flight path is thickened slightly here relative to the full mark. It is
+    the element that thins fastest as the canvas shrinks, and it is the one
+    carrying the brand's only movement.
+  -->
+  <defs>
+    <linearGradient id="glyphGold" x1="0.1" y1="0" x2="0.9" y2="1">
+      <stop offset="0" stop-color="#F3E6D2"/>
+      <stop offset="0.4" stop-color="#D4AF7C"/>
+      <stop offset="1" stop-color="#A87F4A"/>
+    </linearGradient>
+    <linearGradient id="glyphPath" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#F8FAFC" stop-opacity="0.25"/>
+      <stop offset="0.45" stop-color="#F8FAFC" stop-opacity="0.98"/>
+      <stop offset="1" stop-color="#FFFFFF"/>
+    </linearGradient>
+  </defs>
+
+  <path
+    d="M 16 82 L 16 20 L 27.5 20 L 50 47 L 72.5 20 L 84 20 L 84 82 L 73 82
+       L 73 37 L 53.5 60.5 L 46.5 60.5 L 27 37 L 27 82 Z"
+    fill="url(#glyphGold)"/>
+
+  <path
+    d="M 5 79 C 26 77 47 66 63 49 C 71 41 79 32 89 24
+       C 79 36 71 47 63 55 C 46 71 25 81 6 82 Z"
+    fill="url(#glyphPath)"/>
+
+  <g transform="translate(87 21) rotate(-42)">
+    <path d="M 0 -8 L 2.4 -1 L 10.4 1.5 L 10.4 4 L 2.4 2.9 L 2 8
+             L 5 10.1 L 5 11.8 L 0 10.5 L -5 11.8 L -5 10.1
+             L -2 8 L -2.4 2.9 L -10.4 4 L -10.4 1.5 L -2.4 -1 Z"
+          fill="#FFFFFF"/>
+  </g>
+</svg>

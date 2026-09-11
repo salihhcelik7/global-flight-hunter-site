@@ -1,0 +1,501 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy Policy (draft) — MIA GO</title>
+<meta name="description" content="MIA GO privacy policy draft. No account, no analytics, no tracking. Published for transparency; not yet in force.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="assets/favicon.png" type="image/png">
+<meta name="theme-color" content="#0B1220">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="bar">
+  <div class="wrap bar-inner">
+    <a class="lockup" href="index.html" aria-label="MIA GO — home">
+      <img src="assets/miago-glyph.svg" alt="" width="34" height="24" class="glyph">
+      <span class="wordmark">MIA<span class="go">GO</span></span>
+    </a>
+    <nav class="bar-nav" aria-label="Sections">
+      <a href="index.html#verification">Verification</a>
+      <a href="index.html#contact" class="bar-cta">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<main class="legal">
+  <div class="wrap">
+    <a class="back" href="index.html">&larr; Back to MIA GO</a>
+
+    <div class="draft">
+      <p class="draft-flag">Draft — not yet in force</p>
+      <p>
+        This document is published for transparency, not as a binding policy. It
+        was written line by line from the application's own source code, it has
+        <strong>not</strong> been reviewed by a lawyer, and MIA GO has not been
+        released. Two details are deliberately left blank because they require a
+        legal determination rather than a developer's guess: the identity and
+        address of the data controller.
+      </p>
+      <p>
+        Questions, or a request to exercise a right described below:
+        <a href="mailto:salihcelik.amazon@gmail.com">salihcelik.amazon@gmail.com</a>
+      </p>
+    </div>
+
+    <h1>PRIVACY POLICY — DRAFT</h1>
+    <p><strong>MIA GO</strong>
+    Draft version 1.1 · 7 September 2026 · <strong>NOT YET IN FORCE</strong></p>
+    <blockquote>
+    <p><strong>v1.1 (MIA GO):</strong> brand name updated; §5 rewritten because the retention
+    gaps it described are now implemented; §8 rewritten because the erasure path
+    now exists — and because closing it uncovered a defect where it deleted
+    nothing at all; §6 gains a note about the bundled typeface.</p>
+    <p><strong>STATUS:</strong> This is a drafting document, derived line by line from the
+    application's source code (see <code>F10-DATA-INVENTORY.md</code>). It has not been
+    reviewed by a lawyer and must not be published as-is. Every clause that needs
+    professional confirmation is marked inline.</p>
+    <p><strong>LEGAL REVIEW REQUIRED:</strong> Confirm the identity of the data controller
+    (<code>veri sorumlusu</code>) — natural person or company, full legal name, address,
+    and whether registration with VERBİS (the Turkish data controllers' registry)
+    is required. Registration thresholds depend on employee count and annual
+    turnover; a sole developer publishing an app may fall below them, but that is
+    a determination a lawyer must make, not the developer.</p>
+    </blockquote>
+    <hr />
+    <h2>TÜRKÇE ÖZET (bağlayıcı metin aşağıdaki İngilizce sürümdür)</h2>
+    <p><strong>Kısa hâli: bizde hesabın yok, e-postan yok, konumun yok, rehberin yok ve seni
+    takip eden hiçbir reklam veya analitik kodumuz yok.</strong></p>
+    <p>Uygulama üç şeyi sunucuda tutar:</p>
+    <ol>
+    <li><strong>Fiyat gözlemleri.</strong> Bunlar uçuş fiyatlarıdır, senin aramaların değil.
+       Arka planda sabit bir rota listesi taranarak toplanır. Senin yaptığın arama
+       hiçbir kayıt oluşturmaz. 400 gün sonra silinir.</li>
+    <li><strong>Kurduğun fiyat alarmı.</strong> Rota, bütçe ve tarih aralığı. Sen silene kadar
+       durur.</li>
+    <li><strong>Bildirim izni verdiysen cihazının push adresi.</strong> Bu bir "token"dır; adın
+       veya e-postan değildir, ama tek bir cihaz kurulumuna işaret eder.</li>
+    </ol>
+    <p>Arama kutusuna yazdığın metin — serbest yazdığın cümle dâhil — <strong>hiçbir yere
+    kaydedilmez ve hiçbir log dosyasına yazılmaz.</strong> Sunucumuz IP adresini
+    kaydetmez; ancak barındırma sağlayıcımızın kendi erişim kayıtları olabilir.</p>
+    <p>Harita ekranını açtığında telefonun doğrudan OpenFreeMap sunucusuna bağlanır ve
+    o sunucu — her web isteğinde olduğu gibi — IP adresini görür.</p>
+    <p>Uygulama bilet satmaz, ödeme almaz. Fiyatlar <strong>gözlemlenmiş</strong> verilerdir ve her
+    fiyatın yanında nereden ve ne zaman geldiği yazar.</p>
+    <p>Haklarını kullanmak (verilerini sildirmek dâhil) için: <code>salihcelik.amazon@gmail.com</code>.</p>
+    <blockquote>
+    <p><strong>HUKUKİ İNCELEME GEREKLİ:</strong> Bu Türkçe özet ile bağlayıcı İngilizce metin
+    arasındaki hiyerarşi, Türkiye'de yerleşik kullanıcılar açısından geçerli
+    olmayabilir. KVKK aydınlatma yükümlülüğünün Türkçe ve tam metin olarak
+    yerine getirilmesi gerekip gerekmediği teyit edilmelidir.</p>
+    </blockquote>
+    <hr />
+    <h2>1. Who we are</h2>
+    <p>MIA GO ("the app", "we") is a flight discovery application for
+    the Turkish market. It shows observed flight prices and tells you when a price
+    is unusual compared with that route's own history.</p>
+    <ul>
+    <li>Data controller: <code>to be confirmed — pending legal review</code></li>
+    <li>Address: <code>to be confirmed — pending legal review</code></li>
+    <li>Contact: <code>salihcelik.amazon@gmail.com</code></li>
+    <li>Privacy contact: <code>salihcelik.amazon@gmail.com</code></li>
+    </ul>
+    <blockquote>
+    <p><strong>LEGAL REVIEW REQUIRED:</strong> Whether a Data Protection Officer / KVKK contact
+    person (<code>irtibat kişisi</code>) must be appointed and named here.</p>
+    <p><strong>LEGAL REVIEW REQUIRED:</strong> If the controller is established outside Turkey
+    and processes the data of people in Turkey, confirm whether a Turkish
+    representative is required, and whether the same applies under GDPR Art. 27
+    for EU users.</p>
+    </blockquote>
+    <h2>2. The short version</h2>
+    <ul>
+    <li><strong>No accounts.</strong> There is no sign-up, no login, no password, no email field
+      anywhere in the app or the API.</li>
+    <li><strong>No advertising or analytics SDKs.</strong> None are present in the mobile app's
+      dependencies.</li>
+    <li><strong>No location, contacts, camera, microphone, photos or calendar access.</strong> The
+      app requests exactly three Android permissions: internet, notifications, and
+      vibration. It requests no iOS privacy permission other than notifications.</li>
+    <li><strong>Your searches are not stored.</strong> Not the form fields, not the free-text
+      query, not in the database and not in the logs.</li>
+    </ul>
+    <h2>3. What we collect, and why</h2>
+    <h3>3.1 Data you give us deliberately</h3>
+    <p><strong>Price alerts.</strong> If you create an alert, we store the rule on our server: the
+    origin airport, the destination airport (or "anywhere"), your price ceiling
+    and/or minimum discount percentage, your date range, date flexibility, minimum
+    data freshness and currency, plus timestamps of when it was created and last
+    evaluated. We store this so we can check it against new observations.</p>
+    <p>We also store what the alert matched: route, dates, price, comparison baseline,
+    discount percentage, source and observation time.</p>
+    <blockquote>
+    <p><strong>LEGAL REVIEW REQUIRED:</strong> An alert rule reveals travel intent (where someone
+    plans to go and when). Confirm whether that alone requires anything beyond
+    ordinary personal data treatment under KVKK — in particular whether any
+    combination of origin/destination could be argued to reveal a special
+    category of data (for example a route habitually associated with pilgrimage
+    or medical travel), and whether the honest answer is simply "no, we do not
+    infer anything from it".</p>
+    <p><strong>CODE GAP — must be fixed before launch, and this clause must be rewritten
+    to match whatever is built:</strong> alerts are currently stored without any device
+    or user identifier, and the alert listing endpoint returns all alerts to any
+    caller. As written today, one person's alert would be visible to another.
+    This policy must not be published while that is true. See
+    <code>F10-DATA-INVENTORY.md</code> §4 Finding A.</p>
+    </blockquote>
+    <p><strong>Device push token.</strong> If — and only if — you grant notification permission,
+    your device obtains a push token from Expo and the app sends it to our server
+    together with your platform (<code>ios</code>/<code>android</code>/<code>web</code>), your app language, and the
+    fact that permission was granted. We store this so we have an address to send a
+    price alert to. If you refuse notification permission, no token exists and
+    nothing is sent.</p>
+    <p>A push token is not your name or your email, but it is unique to one
+    installation on one device, so we treat it as personal data.</p>
+    <h3>3.2 Data the app keeps on your device only</h3>
+    <p>Your preferences — home airports, currency, language, theme, and your search
+    defaults (optimization mode, maximum stops, baggage requirement, self-transfer
+    tolerance, risk ordering) — are stored in the app's own local storage on your
+    phone. They are never uploaded. Saved routes and the in-app candidate cache
+    exist only in memory and are gone when you close the app.</p>
+    <p>Deleting the app deletes all of this.</p>
+    <h3>3.3 Data we do NOT collect</h3>
+    <p>We do not collect: your name, email address, phone number, postal address,
+    date of birth, payment details, precise or coarse location, contacts, photos,
+    health data, financial data, advertising identifiers (IDFA / Android
+    Advertising ID), or any other data used to track you across apps or websites.</p>
+    <p>We do not build a profile of you. We do not run automated decision-making that
+    produces legal effects concerning you.</p>
+    <h3>3.4 Searches</h3>
+    <p>When you search, your input — origin, destination, dates, passenger counts,
+    cabin class, and any free text you type into the AI search box — is used to run
+    that search and then discarded. It is not written to our database and it is not
+    written to our logs. Free text is interpreted by a rule-based parser that runs
+    on our own server; it is not sent to any third-party AI service.</p>
+    <h3>3.5 Price observations</h3>
+    <p>Our price history is collected by a background process that scans a fixed list
+    of routes on a schedule. It is a record of what flights cost, not a record of
+    what anyone searched for. Nothing in it is connected to you.</p>
+    <h3>3.6 Server logs</h3>
+    <p>Our application writes one log line per request containing a randomly generated
+    request identifier, the URL path, the HTTP method, the response status, how
+    long it took, and a coarse endpoint category. It does not log your IP address,
+    your device's user agent, or the contents of your request. Credentials and push
+    tokens are stripped from every log line automatically.</p>
+    <p>Our hosting provider, like every web host, may keep its own access logs that
+    include IP addresses.</p>
+    <blockquote>
+    <p><strong>LEGAL REVIEW REQUIRED:</strong> Name the hosting provider and its region, state
+    its access-log retention period, and confirm whether it is a processor
+    requiring a data processing agreement (GDPR Art. 28) and, for transfers out
+    of Turkey, what KVKK transfer mechanism applies. This cannot be completed
+    until hosting is chosen. See <code>F10-DATA-INVENTORY.md</code> §4 Finding E.</p>
+    </blockquote>
+    <h2>4. Legal basis</h2>
+    <blockquote>
+    <p><strong>LEGAL REVIEW REQUIRED:</strong> The entire table below is a proposal by an
+    engineer reading the code. The mapping of each processing activity to a legal
+    basis under GDPR Art. 6 and to a condition under KVKK Art. 5 must be
+    confirmed, and the KVKK column in particular must be checked — Turkish law
+    does not mirror GDPR's "legitimate interest" test exactly, and explicit
+    consent (<code>açık rıza</code>) may be required where GDPR would not require it.</p>
+    </blockquote>
+    <table>
+    <thead>
+    <tr>
+    <th>What</th>
+    <th>Why</th>
+    <th>Proposed GDPR basis</th>
+    <th>Proposed KVKK basis</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td>Running a search you asked for</td>
+    <td>You asked</td>
+    <td>Art. 6(1)(b) — performance of a contract / Art. 6(1)(f)</td>
+    <td>Md. 5/2-c (sözleşmenin ifası) or 5/2-f</td>
+    </tr>
+    <tr>
+    <td>Storing a price alert you created</td>
+    <td>You asked for the alert</td>
+    <td>Art. 6(1)(b)</td>
+    <td>Md. 5/2-c</td>
+    </tr>
+    <tr>
+    <td>Storing your push token</td>
+    <td>You granted notification permission</td>
+    <td>Art. 6(1)(a) — consent</td>
+    <td>Md. 5/1 — açık rıza</td>
+    </tr>
+    <tr>
+    <td>Sending you an alert notification</td>
+    <td>Same consent</td>
+    <td>Art. 6(1)(a)</td>
+    <td>Md. 5/1</td>
+    </tr>
+    <tr>
+    <td>Price observations (no personal data)</td>
+    <td>Product function</td>
+    <td>Outside scope — not personal data</td>
+    <td>Kapsam dışı</td>
+    </tr>
+    <tr>
+    <td>Operational logs</td>
+    <td>Keeping the service running and secure</td>
+    <td>Art. 6(1)(f) — legitimate interest</td>
+    <td>Md. 5/2-f (meşru menfaat)</td>
+    </tr>
+    </tbody>
+    </table>
+    <blockquote>
+    <p><strong>LEGAL REVIEW REQUIRED:</strong> If consent is the basis for the push token,
+    confirm that the operating system's notification permission prompt is
+    sufficient evidence of consent, or whether a separate in-app consent record
+    (with timestamp and wording shown) must be stored.</p>
+    </blockquote>
+    <h2>5. How long we keep things</h2>
+    <table>
+    <thead>
+    <tr>
+    <th>Data</th>
+    <th>Retention as currently implemented</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td>Price observations</td>
+    <td><strong>400 days</strong>, then deleted by a daily cleanup job</td>
+    </tr>
+    <tr>
+    <td>Route statistics</td>
+    <td>Recomputed continuously; no independent retention</td>
+    </tr>
+    <tr>
+    <td>Live-verification results</td>
+    <td><strong>180 days</strong></td>
+    </tr>
+    <tr>
+    <td>Alert rules</td>
+    <td>Until you delete them, or until you erase everything for your installation</td>
+    </tr>
+    <tr>
+    <td>Alert matches</td>
+    <td>Deleted with their alert</td>
+    </tr>
+    <tr>
+    <td>Alert triggers</td>
+    <td><strong>180 days</strong></td>
+    </tr>
+    <tr>
+    <td>Alert evaluation log</td>
+    <td><strong>90 days</strong></td>
+    </tr>
+    <tr>
+    <td>Push tokens</td>
+    <td><strong>180 days</strong> since last seen, or immediately when you erase your installation</td>
+    </tr>
+    <tr>
+    <td>Notification delivery records</td>
+    <td><strong>90 days</strong>, or immediately when you erase your installation. The token column holds a one-way fingerprint, not the token</td>
+    </tr>
+    <tr>
+    <td>Job history</td>
+    <td><strong>30 days</strong></td>
+    </tr>
+    <tr>
+    <td>Application logs</td>
+    <td>Determined by the hosting provider — <code>to be completed</code></td>
+    </tr>
+    </tbody>
+    </table>
+    <p>Every period in that table is enforced by <code>RetentionService</code>
+    (<code>app/db/retention.py</code>) and the table in <code>DATA-RETENTION-POLICY.md</code> §2 is
+    generated from the same constants, so the published number and the deleting
+    number cannot drift apart. A configuration override may only ever <strong>shorten</strong> a
+    period; a longer value is refused and logged.</p>
+    <p>Two gaps remain and are stated as gaps in <code>DATA-RETENTION-POLICY.md</code> §4.2:
+    alerts that have expired are marked expired rather than deleted (the table has
+    no <code>expired_at</code> column to delete them by), and no backup policy has been
+    decided because no hosting decision has been made.</p>
+    <blockquote>
+    <p><strong>LEGAL REVIEW REQUIRED:</strong> Confirm the periods above are defensible under
+    KVKK's requirement for a retention and disposal policy
+    (<code>saklama ve imha politikası</code>), and whether the two remaining gaps prevent
+    publication.</p>
+    </blockquote>
+    <h2>6. Who we share data with</h2>
+    <p>We do not sell data. We do not share data for advertising. The complete list of
+    third parties that receive anything at all:</p>
+    <p><strong>Travelpayouts (Aviasales Data API)</strong> — our <em>server</em> asks Travelpayouts for
+    prices on a route and dates. It sends the route, the dates, the currency, the
+    market code (<code>tr</code>) and our own API token. It does not send your IP address,
+    your device information, your push token, or anything identifying you. Your
+    device never contacts Travelpayouts directly.</p>
+    <blockquote>
+    <p><strong>LEGAL REVIEW REQUIRED:</strong> Read the Travelpayouts partner terms and confirm
+    (a) what they permit us to say publicly about the data relationship, (b)
+    whether they are a processor or an independent controller here, and (c) what
+    the affiliate programme requires us to disclose to users about commissions.</p>
+    </blockquote>
+    <p><strong>Expo push service</strong> — when a price alert fires, our server would send the
+    notification content (route, prices, date, deep link) and your push token to
+    Expo, which delivers it to Apple's or Google's push infrastructure.</p>
+    <blockquote>
+    <p><strong>Note on current state:</strong> push delivery is switched off. The configured
+    notifier is a no-op that records that it sent nothing. No notification has
+    ever been delivered. This paragraph describes what happens when the feature
+    is enabled, which is why it is written in the conditional.</p>
+    </blockquote>
+    <p><strong>OpenFreeMap</strong> — when you open the map screen, your device requests map tiles
+    directly from <code>tiles.openfreemap.org</code>. Like any web request, that server sees
+    your IP address and which tiles you asked for. We do not control that server
+    and we do not receive anything from it. No account, key or identifier of ours
+    is involved.</p>
+    <blockquote>
+    <p><strong>LEGAL REVIEW REQUIRED:</strong> Confirm whether OpenFreeMap's own terms and
+    privacy stance need to be linked from here, and whether a direct
+    device-to-third-party request that exposes the user's IP requires prior
+    consent (a cookie/tracker-style consent question rather than a purely
+    informational disclosure) under KVKK or ePrivacy for EU users.</p>
+    </blockquote>
+    <p><strong>Nobody else.</strong> Duffel and Skyscanner adapters exist in our codebase but are
+    not enabled and receive nothing.</p>
+    <p><strong>Not a third party: our typeface.</strong> The app is set in Poppins. The font files
+    are bundled inside the application package and are read from local storage. No
+    request is made to Google Fonts or any other font host, so no font request
+    carries your IP address anywhere. This is worth stating because a web font
+    loaded from a CDN would be exactly such a request, and many apps have one.</p>
+    <p>We may disclose data if required by a lawful order.</p>
+    <blockquote>
+    <p><strong>LEGAL REVIEW REQUIRED:</strong> Wording of the lawful-disclosure clause, and
+    whether a transparency-report commitment should be made or avoided.</p>
+    </blockquote>
+    <h2>7. International transfers</h2>
+    <p>Travelpayouts, Expo and OpenFreeMap operate outside Turkey. Where we send data
+    to them, that is a transfer abroad.</p>
+    <blockquote>
+    <p><strong>LEGAL REVIEW REQUIRED:</strong> Identify the KVKK transfer mechanism for each
+    recipient under the post-2024 KVKK amendments (standard contractual clauses,
+    binding corporate rules, or an explicit-consent route), and the GDPR Chapter
+    V mechanism where EU users are involved. Note that a push token sent to Expo
+    is a transfer of personal data; a route query sent to Travelpayouts arguably
+    is not, because it carries no identifier — that argument needs confirming
+    rather than assuming.</p>
+    </blockquote>
+    <h2>8. Your rights</h2>
+    <p>Under GDPR (if you are in the EEA/UK) and KVKK Art. 11 (if you are in Turkey)
+    you can ask us to tell you what we hold about you, correct it, delete it,
+    restrict or object to processing, and receive it in a portable form. You can
+    withdraw consent for notifications at any time — either in your phone's
+    settings or by turning notifications off in the app.</p>
+    <p><strong>How to exercise them, honestly stated:</strong> because we hold no account, we
+    cannot look you up by name or email. Your identifier is an installation id
+    generated on your device. What you can do:</p>
+    <ul>
+    <li><strong>Erase everything we hold for your installation</strong> — from inside the app. It
+      deletes your alerts and everything attached to them, your device's push token
+      records, and the delivery records for those tokens. There is no account to
+      close, so this <em>is</em> the deletion right.</li>
+    <li><strong>Delete a single alert</strong> — from inside the app.</li>
+    <li><strong>Everything on your device</strong> — deleting the app removes it, and it is not
+      copied anywhere first: Android's automatic backup is switched off for this app
+      (<code>android.allowBackup: false</code>). It was on by default, which would have left a
+      copy of your preferences in your Google account after you deleted the app —
+      and this sentence would have been false.</li>
+    </ul>
+    <p>If you send a request we cannot connect to any record, we will say so rather
+    than pretend to have acted.</p>
+    <blockquote>
+    <p><strong>How we know it works.</strong> When erasure was first implemented it deleted the
+    alerts and the token records but <em>not</em> the delivery records: it looked them up
+    by the raw push token, while that column has only ever held a one-way
+    fingerprint of it. The delete matched nothing and reported success. It is
+    fixed, and the test that covers it now records data the way production records
+    it — which is what the earlier test failed to do.</p>
+    <p><strong>LEGAL REVIEW REQUIRED:</strong> Confirm the statutory response deadline to quote
+    (KVKK: 30 days; GDPR: one month) and the complaint routes to name — the
+    Turkish Data Protection Authority (KVKK Kurumu) and, for EU users, the
+    relevant supervisory authority.</p>
+    <p><strong>CODE GAP — CLOSED.</strong> <code>DELETE /v1/alerts/installation</code> exists and erases
+    everything the installation owns. A screen that shows a user their own push
+    token was deliberately NOT built: echoing a token multiplies the places it can
+    leak from, and the erasure path does not need the user to read it out.
+    See <code>DATA-RETENTION-POLICY.md</code> §4.1.</p>
+    </blockquote>
+    <h2>9. Security</h2>
+    <p>Traffic between the app and our server uses HTTPS.</p>
+    <blockquote>
+    <p><strong>LEGAL REVIEW REQUIRED / CODE GAP:</strong> TLS termination is a deployment
+    decision that has not been made; the app's default configuration points at a
+    plain-HTTP local address for development. Before launch, confirm HTTPS is
+    enforced in production, that the production <code>apiBaseUrl</code> is an <code>https://</code>
+    URL, and only then publish this sentence.</p>
+    </blockquote>
+    <p>Credentials and push tokens are removed from log output automatically. Access
+    to the administrative endpoint that spends provider quota requires a token and
+    is closed by default outside local development.</p>
+    <p>We do not encrypt the database at rest ourselves; whether it is encrypted
+    depends on the hosting provider.</p>
+    <blockquote>
+    <p><strong>LEGAL REVIEW REQUIRED:</strong> Confirm what security measures may be stated
+    without overclaiming, and what must be in place before the app-store data
+    safety forms may assert "data is encrypted in transit".</p>
+    </blockquote>
+    <h2>10. Children</h2>
+    <p>The app is not directed at children and we do not knowingly collect data from
+    children. We do not ask for age, because we do not ask for anything.</p>
+    <blockquote>
+    <p><strong>LEGAL REVIEW REQUIRED:</strong> Confirm the age threshold to state (GDPR Art. 8
+    allows member states to set 13–16; Turkey has no directly equivalent
+    children's-consent article, and the App Store and Play age ratings must agree
+    with whatever is stated here). Also confirm the app is not required to
+    implement age assurance under any newer Turkish rules.</p>
+    </blockquote>
+    <h2>11. Changes to this policy</h2>
+    <p>We will post any change here with a new version number and date. If a change
+    materially expands what we collect, we will say so in the app before it takes
+    effect.</p>
+    <h2>12. Contact</h2>
+    <p><code>salihcelik.amazon@gmail.com</code>
+    <code>to be confirmed — pending legal review</code></p>
+    <hr />
+    <h2>Appendix — pre-publication checklist</h2>
+    <p>Do not publish until every one of these is resolved:</p>
+    <ul>
+    <li>[ ] Controller identity and address filled in</li>
+    <li>[ ] Hosting provider chosen; log retention and IP handling documented (§3.6, §5)</li>
+    <li>[ ] Alerts scoped to a device; the "visible to everyone" gap closed (§3.1)</li>
+    <li>[ ] Token deletion path built and described (§8)</li>
+    <li>[ ] Retention periods implemented, replacing every "indefinite" (§5)</li>
+    <li>[ ] HTTPS confirmed in production (§9)</li>
+    <li>[ ] Travelpayouts affiliate disclosure wording confirmed (§6)</li>
+    <li>[ ] Lawyer has signed off on every <code>LEGAL REVIEW REQUIRED</code> marker above</li>
+    <li>[ ] Turkish full text prepared if KVKK requires more than the summary</li>
+    </ul>
+  </div>
+</main>
+
+<footer class="foot">
+  <div class="wrap foot-inner">
+    <div class="foot-brand">
+      <img src="assets/miago-glyph.svg" alt="" width="30" height="21" class="glyph">
+      <span class="wordmark small-mark">MIA<span class="go">GO</span></span>
+      <p class="foot-tag">Go further. Pay less.</p>
+    </div>
+    <nav class="foot-links" aria-label="Legal and contact">
+      <a href="privacy.html">Privacy Policy</a>
+      <a href="terms.html">Terms of Use</a>
+      <a href="mailto:salihcelik.amazon@gmail.com">salihcelik.amazon@gmail.com</a>
+    </nav>
+  </div>
+</footer>
+
+</body>
+</html>

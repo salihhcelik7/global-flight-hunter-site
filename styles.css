@@ -1,0 +1,560 @@
+/* =========================================================================
+   MIA GO — public landing page
+
+   The palette, the typeface and the restraint are the app's, lifted from
+   `src/design/tokens.ts` rather than re-invented here: midnight ground, one
+   champagne accent, and colour spent only where it carries meaning. A landing
+   page that looks like a different product than the app it advertises is the
+   thing this file exists to avoid.
+
+   Committed to a single dark theme. That is a choice, not an omission — the
+   brand is a midnight one — so every colour is painted explicitly and nothing
+   inherits a host background.
+   ========================================================================= */
+
+:root {
+  /* ink — the ground and everything that sits on it */
+  --ink-950: #0B1220;
+  --ink-900: #101A2B;
+  --ink-850: #16233A;
+  --ink-800: #1C2C46;
+  --ink-700: #243854;
+  --ink-600: #304766;
+  --ink-350: #7F8EA3;
+  --ink-200: #A3AFC0;
+  --ink-50:  #F8FAFC;
+
+  /* champagne — the only accent, and it is rationed */
+  --gold-600: #A87F4A;
+  --gold-500: #D4AF7C;
+  --gold-400: #E2C79B;
+  --gold-300: #F3E6D2;
+
+  --jade:  #34D399;
+  --amber: #FBBF24;
+
+  --text:       var(--ink-50);
+  --text-2:     var(--ink-200);
+  --text-3:     var(--ink-350);
+  --line:       rgba(163, 175, 192, 0.14);
+  --line-strong:rgba(163, 175, 192, 0.24);
+
+  --display: 'Poppins', 'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+
+  --wrap: 1120px;
+  --radius: 16px;
+  --radius-lg: 22px;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  /* The header is sticky, so an anchor that scrolls a heading to y=0 parks it
+     underneath the bar. This is the offset that stops "Verification" in the nav
+     from landing on a section whose title is hidden. */
+  scroll-padding-top: 78px;
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+
+body {
+  margin: 0;
+  background: var(--ink-950);
+  color: var(--text);
+  font-family: var(--display);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+img { max-width: 100%; height: auto; display: block; }
+
+a { color: var(--gold-400); text-decoration: none; }
+a:hover { color: var(--gold-300); text-decoration: underline; }
+a:focus-visible,
+.btn:focus-visible {
+  outline: 2px solid var(--gold-500);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+.skip {
+  position: absolute; left: -9999px; top: 0;
+  background: var(--gold-500); color: var(--ink-950);
+  padding: 10px 16px; font-weight: 600; z-index: 100;
+}
+.skip:focus { left: 12px; top: 12px; }
+
+.wrap { width: 100%; max-width: var(--wrap); margin: 0 auto; padding: 0 24px; }
+
+/* ------------------------------------------------------------------ header */
+.bar {
+  position: sticky; top: 0; z-index: 50;
+  background: rgba(11, 18, 32, 0.86);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--line);
+}
+.bar-inner {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px; min-height: 62px;
+}
+
+.lockup { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.lockup:hover { text-decoration: none; }
+.glyph { width: 34px; height: auto; }
+
+/* The wordmark: letter-spaced caps with the GO in champagne — the same
+   relationship the app's lockup has, done in type rather than in an image so
+   it stays sharp at any size and costs nothing to load. */
+.wordmark {
+  font-weight: 700;
+  font-size: 19px;
+  letter-spacing: 0.16em;
+  color: var(--text);
+}
+.wordmark .go { color: var(--gold-500); margin-left: 0.28em; }
+.small-mark { font-size: 17px; }
+
+.bar-nav { display: flex; align-items: center; gap: 22px; }
+.bar-nav a {
+  color: var(--text-2);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+.bar-nav a:hover { color: var(--text); text-decoration: none; }
+.bar-cta {
+  border: 1px solid var(--line-strong);
+  padding: 7px 15px;
+  border-radius: 999px;
+  color: var(--gold-400) !important;
+}
+.bar-cta:hover { border-color: var(--gold-600); }
+
+/* -------------------------------------------------------------------- hero */
+.hero {
+  position: relative;
+  padding: clamp(56px, 9vw, 108px) 0 clamp(48px, 7vw, 88px);
+  overflow: hidden;
+}
+/* One warm pool of light behind the mark. The whole page's colour budget is
+   spent here and on the wordmark; everything after is ink and type. */
+.hero::before {
+  content: "";
+  position: absolute; inset: -30% -10% auto auto;
+  width: 780px; height: 780px;
+  background: radial-gradient(circle, rgba(212, 175, 124, 0.13) 0%, rgba(212, 175, 124, 0) 62%);
+  pointer-events: none;
+}
+.hero-inner {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  gap: clamp(24px, 5vw, 64px);
+  align-items: center;
+}
+.hero-mark { justify-self: center; }
+.hero-mark img { width: clamp(200px, 26vw, 360px); }
+
+.eyebrow {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.17em;
+  text-transform: uppercase;
+  color: var(--gold-500);
+  margin: 0 0 14px;
+}
+
+h1 {
+  font-size: clamp(42px, 7.4vw, 78px);
+  line-height: 1.03;
+  letter-spacing: -0.035em;
+  font-weight: 700;
+  margin: 0 0 20px;
+  text-wrap: balance;
+}
+h1 .gold {
+  background: linear-gradient(100deg, var(--gold-300) 0%, var(--gold-500) 45%, var(--gold-600) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.lede {
+  font-size: clamp(16px, 1.6vw, 18px);
+  color: var(--text-2);
+  max-width: 58ch;
+  margin: 0 0 28px;
+}
+.lede strong { color: var(--text); font-weight: 600; }
+
+.hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 26px; }
+
+.btn {
+  display: inline-block;
+  padding: 13px 24px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: 0.01em;
+  transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+}
+.btn:hover { text-decoration: none; transform: translateY(-1px); }
+.btn-primary {
+  background: linear-gradient(135deg, var(--gold-400), var(--gold-600));
+  color: var(--ink-950) !important;
+}
+.btn-ghost {
+  border: 1px solid var(--line-strong);
+  color: var(--text-2) !important;
+}
+.btn-ghost:hover { border-color: var(--gold-600); color: var(--gold-300) !important; }
+
+/* The status line is deliberately plain. It is the sentence that stops the
+   hero from over-promising, and dressing it up would undo that. */
+/* Top-aligned, not centre-aligned: on a narrow screen this line wraps to two,
+   and a centred dot then floats in the gap between them instead of marking the
+   start of the sentence. */
+.status {
+  display: flex; align-items: flex-start; gap: 9px;
+  font-size: 13.5px; color: var(--text-3); margin: 0;
+}
+.dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--gold-500);
+  flex: none;
+  margin-top: 8px;
+}
+
+/* ------------------------------------------------------------------- bands */
+.band {
+  padding: clamp(52px, 7vw, 92px) 0;
+  border-top: 1px solid var(--line);
+  scroll-margin-top: 70px;
+}
+.band.alt { background: var(--ink-900); }
+
+h2 {
+  font-size: clamp(27px, 3.6vw, 40px);
+  line-height: 1.14;
+  letter-spacing: -0.024em;
+  font-weight: 700;
+  margin: 0 0 18px;
+  text-wrap: balance;
+}
+.section-title { margin-bottom: 16px; }
+.section-lede {
+  font-size: clamp(15.5px, 1.4vw, 17px);
+  color: var(--text-2);
+  max-width: 68ch;
+  margin: 0 0 36px;
+}
+.section-lede strong { color: var(--text); font-weight: 600; }
+
+h3 {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.012em;
+  margin: 0 0 10px;
+  color: var(--text);
+}
+
+p { margin: 0 0 14px; }
+p:last-child { margin-bottom: 0; }
+
+.small { font-size: 13.5px; color: var(--text-3); max-width: 66ch; }
+.mono { font-family: var(--mono); font-size: 0.92em; color: var(--gold-400); }
+
+/* ------------------------------------------------------------------- grids */
+.grid { display: grid; gap: 18px; }
+.grid-2 { grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); }
+.grid-3 { grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); }
+
+/* Cards carry a fill and a hairline, not a shadow. On a midnight ground a
+   drop shadow is invisible and a border is the only thing that separates one
+   surface from the next. */
+.card {
+  background: var(--ink-850);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 24px;
+}
+.band.alt .card { background: var(--ink-850); }
+.card p { color: var(--text-2); font-size: 15px; }
+.card.tall { padding: 28px; }
+
+/* ------------------------------------------------------------------- split */
+.split {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  gap: clamp(28px, 5vw, 64px);
+  align-items: center;
+}
+.split-copy p { color: var(--text-2); max-width: 56ch; }
+.split.reverse .split-copy { order: 2; }
+.split.reverse .phone { order: 1; }
+
+/* -------------------------------------------------------------------- list */
+.ticks { list-style: none; padding: 0; margin: 20px 0 0; }
+.ticks li {
+  position: relative;
+  padding-left: 26px;
+  margin-bottom: 11px;
+  color: var(--text-2);
+  font-size: 15px;
+}
+.ticks li::before {
+  content: "";
+  position: absolute;
+  left: 4px; top: 9px;
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--gold-600);
+}
+.ticks.tight li { margin-bottom: 9px; font-size: 14.5px; }
+
+/* ------------------------------------------------------------------- phone */
+.phone { margin: 0; }
+.phone img {
+  width: 100%;
+  max-width: 320px;
+  margin: 0 auto;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--line-strong);
+  background: var(--ink-950);
+}
+.phone figcaption {
+  margin-top: 14px;
+  font-size: 13px;
+  color: var(--text-3);
+  text-align: center;
+  max-width: 340px;
+  margin-inline: auto;
+}
+
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  gap: 26px;
+}
+.small-phone img { max-width: 260px; }
+
+/* ----------------------------------------------------------- comparison -- */
+/* A small, honest reproduction of the app's comparison block. It earns its
+   place because the claim of this section is visual: the point is that the
+   saving and its cost are on the same line. */
+.compare {
+  background: var(--ink-850);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 22px;
+  margin: 24px 0 14px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px 18px;
+}
+.compare-col { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.compare-col.right { text-align: right; }
+.compare-label {
+  font-size: 11.5px; font-weight: 600; letter-spacing: 0.13em;
+  text-transform: uppercase; color: var(--text-3);
+}
+.compare-label.gold { color: var(--gold-500); }
+.compare-price {
+  font-size: clamp(20px, 3.2vw, 27px);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+}
+.compare-price.struck { color: var(--text-3); text-decoration: line-through; font-size: clamp(17px, 2.4vw, 21px); }
+.compare-meta { font-size: 13px; color: var(--text-3); }
+
+.compare-save {
+  grid-column: 1 / -1;
+  margin: 14px 0 0;
+  padding: 11px 15px;
+  border-radius: 12px;
+  background: rgba(52, 211, 153, 0.12);
+  display: flex; flex-wrap: wrap; align-items: baseline;
+  justify-content: space-between; gap: 8px;
+}
+.compare-save strong {
+  color: var(--jade); font-size: 16px; font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.compare-save span { color: var(--text-2); font-size: 13.5px; }
+
+.compare-take {
+  grid-column: 1 / -1;
+  margin: 14px 0 0;
+  display: flex; gap: 12px; align-items: stretch;
+  font-size: 14.5px; color: var(--text-2);
+}
+/* A bar the height of the sentence, not a dot beside it: the colour attaches
+   to the words rather than floating next to them. */
+.bar-amber {
+  width: 3px; border-radius: 2px; flex: none;
+  background: var(--amber);
+}
+
+/* ------------------------------------------------------------------ notice */
+.notice {
+  border: 1px solid var(--line-strong);
+  border-left: 3px solid var(--gold-500);
+  border-radius: var(--radius);
+  background: var(--ink-850);
+  padding: 26px 28px;
+  margin-bottom: 26px;
+}
+.notice p { color: var(--text-2); max-width: 74ch; }
+.notice-flag {
+  font-size: 12px; font-weight: 700; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--gold-500) !important;
+  margin-bottom: 14px !important;
+}
+
+/* ------------------------------------------------------------------- stats */
+.stats { margin-bottom: 30px; }
+.stat {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 22px;
+  background: var(--ink-850);
+}
+.band.alt .stat { background: var(--ink-950); }
+.stat-num {
+  display: block;
+  font-size: 22px; font-weight: 700; letter-spacing: -0.02em;
+  color: var(--gold-400);
+  margin-bottom: 8px;
+}
+.stat-label { font-size: 14px; color: var(--text-2); }
+
+/* ----------------------------------------------------------------- contact */
+.contact { text-align: center; }
+.contact .section-lede { margin-inline: auto; }
+.email {
+  font-size: clamp(18px, 2.6vw, 25px);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  margin: 6px 0 20px;
+  word-break: break-word;
+}
+.contact .small { margin-inline: auto; }
+
+/* ------------------------------------------------------------------ footer */
+.foot {
+  border-top: 1px solid var(--line);
+  background: var(--ink-900);
+  padding: 44px 0 34px;
+}
+.foot-inner {
+  display: flex; flex-wrap: wrap; gap: 24px;
+  align-items: flex-start; justify-content: space-between;
+  padding-bottom: 26px;
+}
+.foot-brand { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.foot-tag {
+  width: 100%;
+  font-size: 13.5px; color: var(--text-3); margin: 4px 0 0;
+}
+.foot-links { display: flex; flex-wrap: wrap; gap: 22px; }
+.foot-links a { font-size: 14px; color: var(--text-2); }
+.foot-links a:hover { color: var(--gold-300); }
+.foot-note {
+  font-size: 12.5px;
+  line-height: 1.65;
+  color: var(--text-3);
+  border-top: 1px solid var(--line);
+  padding-top: 22px;
+  margin: 0;
+  max-width: 86ch;
+}
+.foot-note strong { color: var(--text-2); }
+
+/* ================================================================= legal == */
+/* The policy pages share this stylesheet so the drafts look like the product
+   rather than like a text file someone forgot about. */
+.legal { padding: clamp(40px, 6vw, 72px) 0 clamp(56px, 8vw, 96px); }
+.legal .wrap { max-width: 800px; }
+.legal h1 { font-size: clamp(30px, 4.6vw, 46px); margin-bottom: 10px; }
+.legal h2 {
+  font-size: clamp(19px, 2.2vw, 24px);
+  margin-top: 44px; margin-bottom: 12px;
+  padding-top: 22px;
+  border-top: 1px solid var(--line);
+}
+.legal h3 { font-size: 16px; margin-top: 26px; }
+.legal p, .legal li { color: var(--text-2); font-size: 15.5px; }
+.legal ul, .legal ol { padding-left: 22px; margin: 0 0 16px; }
+.legal li { margin-bottom: 9px; }
+.legal table {
+  width: 100%; border-collapse: collapse; margin: 0 0 18px;
+  font-size: 14px; display: block; overflow-x: auto;
+}
+.legal th, .legal td {
+  border: 1px solid var(--line);
+  padding: 9px 12px; text-align: left; vertical-align: top;
+  color: var(--text-2);
+}
+.legal th { color: var(--text); font-weight: 600; background: var(--ink-850); }
+.legal code {
+  font-family: var(--mono); font-size: 0.9em;
+  background: var(--ink-850); padding: 2px 6px; border-radius: 5px;
+  color: var(--gold-400);
+}
+.legal .back { display: inline-block; margin-bottom: 26px; font-size: 14px; }
+
+/* The draft banner. It is the most important element on those two pages, so
+   it is the only thing on them that carries a fill. */
+.draft {
+  border: 1px solid rgba(251, 191, 36, 0.38);
+  border-left: 3px solid var(--amber);
+  background: rgba(251, 191, 36, 0.07);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  margin: 0 0 34px;
+}
+.draft p { color: var(--text-2); margin-bottom: 10px; font-size: 15px; }
+.draft p:last-child { margin-bottom: 0; }
+.draft-flag {
+  font-size: 12px; font-weight: 700; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--amber) !important;
+  margin-bottom: 12px !important;
+}
+
+/* ============================================================ responsive == */
+@media (max-width: 900px) {
+  .hero-inner { grid-template-columns: 1fr; text-align: left; }
+  .hero-mark { order: -1; justify-self: start; }
+  .hero-mark img { width: clamp(150px, 42vw, 230px); }
+  .split { grid-template-columns: 1fr; }
+  .split.reverse .split-copy,
+  .split.reverse .phone { order: unset; }
+  .phone img { max-width: 300px; }
+}
+
+@media (max-width: 720px) {
+  .bar-nav { gap: 14px; }
+  /* Two of the four links go below this width. The section anchors are a
+     convenience; Contact is the one a reviewer actually needs, so it is the
+     one that stays. */
+  .bar-nav a:not(.bar-cta):not([href="#verification"]) { display: none; }
+}
+
+@media (max-width: 560px) {
+  .wrap { padding: 0 18px; }
+  .bar-nav a:not(.bar-cta) { display: none; }
+  .compare { grid-template-columns: 1fr; gap: 4px; }
+  .compare-col.right { text-align: left; margin-top: 14px; }
+  .compare-save { flex-direction: column; align-items: flex-start; gap: 4px; }
+  .foot-inner { flex-direction: column; gap: 20px; }
+  .foot-links { flex-direction: column; gap: 12px; }
+}
